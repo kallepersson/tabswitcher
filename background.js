@@ -65,7 +65,7 @@
 		} else if (message.command == "select-tab") {
 			selectTab(message.value);
 		} else if (message.command == "log") {
-			console.log(message);
+			console.log(message.value);
 		}
 	}
 
