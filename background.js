@@ -18,7 +18,7 @@
 
 	const selectTab = function(index) {
 		var tabId = _filteredTabs[index].id;
-		chrome.tabs.update(tabId, {highlighted: true})
+		chrome.tabs.update(tabId, {highlighted: true, active:true})
 	}
 
 	const updateTabs = function(callback) {
