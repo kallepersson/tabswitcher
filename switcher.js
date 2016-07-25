@@ -96,13 +96,32 @@
 		})
 	}
 
-	const blur = function(event){
+	const blur = function(event) {
 		input.focus()
+	}
+
+	const click = function(event) {
+		if (event.target.tagName != "LI") {
+			return;
+		}
+
+		var index = [].indexOf.call(event.target.parentNode.children, event.target);
+
+		port.postMessage({
+			command: "log",
+			value: index
+		})
+
+		if (index != -1) {
+			selectTab(index);
+		}
+
 	}
 
 	window.addEventListener("keyup", keyUp, true)
 	window.addEventListener("blur", blur, true)
 	window.addEventListener("keydown", keyDown, true)
+	window.addEventListener("click", click, true)
 
 	input.focus();
 })()
