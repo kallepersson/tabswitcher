@@ -1,6 +1,6 @@
 (function(){
 
-	const port = chrome.extension.connect({name: "Sample Communication"})
+	const port = chrome.extension.connect({name: "Connection"})
 	const input = document.getElementById("search")
 	const ul = document.getElementById("tabs")
 	var _selectedItemIndex = 0
