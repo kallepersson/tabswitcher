@@ -13,6 +13,8 @@
 			// Don't support chrome:// urls for favicons since they won't load
 			if (tab.favIconUrl && tab.favIconUrl.indexOf('chrome://') == -1) {
 				img.src = tab.favIconUrl
+			} else {
+				img.src = "icons/favicon.png"
 			}
 			var span = document.createElement("span")
 			li.appendChild(img)
