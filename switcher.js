@@ -10,7 +10,10 @@
 		tabs.forEach(function(tab){
 			var li = document.createElement("li")
 			var img = document.createElement("img")
-			img.src = tab.favIconUrl
+			// Don't support chrome:// urls for favicons since they won't load
+			if (tab.favIconUrl && tab.favIconUrl.indexOf('chrome://') == -1) {
+				img.src = tab.favIconUrl
+			}
 			var span = document.createElement("span")
 			li.appendChild(img)
 			li.appendChild(span)
