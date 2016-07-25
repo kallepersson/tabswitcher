@@ -1,0 +1,1 @@
+zip -r ../tabswitcher.zip . -x \*.git* \*package.sh \*.DS_Store
