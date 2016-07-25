@@ -30,7 +30,7 @@
 		})
 	}
 
-	const onTabUpdated = function() {
+	const onTabCreatedOrUpdated = function() {
 		updateTabs()
 	}
 
@@ -69,7 +69,8 @@
 		}
 	}
 
-	chrome.tabs.onUpdated.addListener(onTabUpdated);
+	chrome.tabs.onUpdated.addListener(onTabCreatedOrUpdated);
+	chrome.tabs.onCreated.addListener(onTabCreatedOrUpdated);
 
 	chrome.extension.onConnect.addListener(function(port) {
 		_port = port;
