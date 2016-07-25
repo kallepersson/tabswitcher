@@ -103,4 +103,6 @@
 	window.addEventListener("keyup", keyUp, true)
 	window.addEventListener("blur", blur, true)
 	window.addEventListener("keydown", keyDown, true)
+
+	input.focus();
 })()
