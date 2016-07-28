@@ -32,7 +32,7 @@
 
 	window.updateTabs = updateTabs
 
-	const keyUp = function(event) {
+	const handleInput = function(event) {
 		if (event.target != input) {
 			return
 		}
@@ -120,7 +120,7 @@
 
 	}
 
-	window.addEventListener("keyup", keyUp, true)
+	window.addEventListener("input", handleInput, true)
 	window.addEventListener("blur", blur, true)
 	window.addEventListener("keydown", keyDown, true)
 	window.addEventListener("click", click, true)
