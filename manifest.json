@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Tab Switcher",
   "author": "Kalle Persson",
-  "version": "1.3",
+  "version": "1.4",
   "homepage_url": "http://kallepersson.se/tabswitcher",
   "description": "Rapidly filter and switch between tabs",
   "permissions": [

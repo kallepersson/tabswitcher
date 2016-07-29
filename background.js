@@ -55,6 +55,10 @@
 	const sendTabs = function(refresh) {
 		refresh = refresh || false;
 		var popups = chrome.extension.getViews({type: "popup"});
+		if (!popups || popups.length == 0) {
+			return;
+		}
+
 		popups[0].updateTabs(_filteredTabs, refresh);
 	}
 
@@ -67,8 +71,13 @@
 		}
 	}
 
+	const onWindowFocusChanged = function() {
+		sendTabs(true);
+	}
+
 	chrome.tabs.onUpdated.addListener(onTabCreatedOrUpdated);
 	chrome.tabs.onCreated.addListener(onTabCreatedOrUpdated);
+	chrome.windows.onFocusChanged.addListener(onWindowFocusChanged);
 
 	chrome.extension.onConnect.addListener(function(port) {
 		_port = port;
