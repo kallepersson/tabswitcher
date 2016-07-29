@@ -2,8 +2,9 @@
   "manifest_version": 2,
   "name": "Tab Switcher",
   "author": "Kalle Persson",
-  "version": "1.1",
-  "description": "Type to find an and open tap in this window. Keyboard shortcut: ⌘/Ctrl + Shift + K",
+  "version": "1.2",
+  "homepage_url": "http://kallepersson.se/tabswitcher",
+  "description": "Rapidly filter and switch between tabs",
   "permissions": [
     "tabs"
   ],
