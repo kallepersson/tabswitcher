@@ -18,7 +18,13 @@
 
 	const selectTab = function(index) {
 		var tabId = _filteredTabs[index].id;
+		let switcherWindow;
 		chrome.tabs.update(tabId, {highlighted: true, active:true})
+
+		if (switcherWindow = getWindow()) {
+			switcherWindow.close();
+		}
+		
 	}
 
 	const updateTabs = function(callback) {
@@ -52,14 +58,21 @@
 		return false;
 	}
 
-	const sendTabs = function(refresh) {
-		refresh = refresh || false;
+	const getWindow = function() {
 		var popups = chrome.extension.getViews({type: "popup"});
 		if (!popups || popups.length == 0) {
-			return;
+			return null;
 		}
 
-		popups[0].updateTabs(_filteredTabs, refresh);
+		return popups[0];
+	}
+
+	const sendTabs = function(refresh) {
+		refresh = refresh || false;
+		let switcherWindow;
+		if (switcherWindow = getWindow()) {
+			switcherWindow.updateTabs(_filteredTabs, refresh);
+		}
 	}
 
 	const onMessage = function(message) {
