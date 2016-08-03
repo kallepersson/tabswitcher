@@ -3,9 +3,73 @@
 	const port = chrome.extension.connect({name: "Connection"})
 	const input = document.getElementById("search")
 	const ul = document.getElementById("tabs")
-	var _selectedItemIndex = 0
+	var controlDown = false;
+	var selectedListItemIndex = 0;
 
-	const updateTabs = function(tabs, refresh) {
+	const tabModel = {
+		tabs:[],
+		filteredTabs:[],
+		query:"",
+		fuse: new Fuse(this.tabs, {
+			caseSensitive: false,
+			includeScore: false,
+			shouldSort: true,
+			tokenize: false,
+			threshold: 0.6,
+			location: 0,
+			distance: 100,
+			maxPatternLength: 32,
+			keys: ["title", "url"]
+		}),
+		reloadTabs: function(callback) {
+			chrome.tabs.query({currentWindow:true}, function(tabs) {
+				this.tabs = tabs;
+				this.filteredTabs = tabs;
+
+				if (callback) {
+					callback();
+				}
+
+			}.bind(this))
+		},
+		filterTabs: function(query) {
+			if (query == this.query) {
+				return false;
+			}
+
+			this.query = query;
+
+			if (!this.query || this.query == "") {
+				this.filteredTabs = this.tabs;
+			} else {
+				this.fuse.set(this.tabs);
+				this.filteredTabs = this.fuse.search(this.query)
+				return true;
+			}
+
+			return false; // list did change
+		},
+		closeTab: function(tabId, callback) {
+			chrome.tabs.remove(parseInt(tabId), function() { 
+				if (callback) {
+					callback();
+				}
+			})
+		}
+	}
+
+	const filterTabs = function(query) {
+		let shouldClearSelection = tabModel.filterTabs(query);
+		createTabList(tabModel.filteredTabs, shouldClearSelection);
+	}
+
+	const loadTabs = function() {
+		tabModel.reloadTabs(function(){
+			createTabList(tabModel.filteredTabs, true);
+		})
+	}
+
+	const createTabList = function(tabs, clearSelection) {
 		ul.innerHTML = ""
 		tabs.forEach(function(tab){
 			var li = document.createElement("li")
@@ -17,30 +81,44 @@
 				img.src = "icons/favicon.png"
 			}
 			var span = document.createElement("span")
+			var closeButton = document.createElement("button")
+			closeButton.addEventListener('click', closeButtonClicked);
+			li.setAttribute('data-id', tab.id)
 			li.appendChild(img)
 			li.appendChild(span)
+			li.appendChild(closeButton)
 			span.innerText = tab.title
+			li.addEventListener('click', listItemClicked);
 			ul.appendChild(li)
 		})
 
-		if (refresh) {
-			_selectedItemIndex = 0;
+		if (clearSelection) {
+			selectedListItemIndex = 0;
 		}
 
 		updateSelection()
 	}
 
-	window.updateTabs = updateTabs
+	const tabIdForIndex = function(index) {
+		let items = ul.querySelectorAll("li");
+		let li = items[index];
+		if (li) {
+			return parseInt(li.getAttribute("data-id"));
+		}
+	}
 
 	const handleInput = function(event) {
 		if (event.target != input) {
 			return
 		}
 
-		port.postMessage({
-			command: "filter-tabs",
-			value: input.value
-		})
+		filterTabs(input.value)
+	}
+
+	const keyUp = function(event) {
+		if (event.code == "ControlLeft") {
+			controlDown = false;
+		}
 	}
 
 	const keyDown = function(event) {
@@ -52,27 +130,43 @@
 
 		switch (event.code) {
 			case "ArrowDown":
-				if (_selectedItemIndex < items.length - 1) {
-					_selectedItemIndex++
+				if (selectedListItemIndex < items.length - 1) {
+					selectedListItemIndex++
 				} else {
-					_selectedItemIndex = 0
+					selectedListItemIndex = 0
 				}
 			break
 			case "ArrowUp":
-				if (_selectedItemIndex > 0) {
-					_selectedItemIndex--
+				if (selectedListItemIndex > 0) {
+					selectedListItemIndex--
 				} else {
-					_selectedItemIndex = items.length - 1
+					selectedListItemIndex = items.length - 1
 				}
 			break
 			case "Enter":
-				selectTab(_selectedItemIndex)
+				selectTab(selectedListItemIndex)
 			break
 			case "Escape":
 				if (input.value == "") {
 					window.close()
 				}
 			break
+			case "ControlLeft":
+				controlDown = true;
+			break;
+			case "KeyX":
+			if (controlDown) {
+				var li = ul.querySelector(".selected")
+				if (!li) {
+					return;
+				}
+
+				tabModel.closeTab(li.getAttribute('data-id'), function() {
+					li.remove();
+					updateSelection();
+				});
+			}
+			break;
 		}
 
 		updateSelection()
@@ -86,44 +180,64 @@
 			selected.classList.remove("selected")
 		}
 
-		if (_selectedItemIndex < items.length) {
-			items.item(_selectedItemIndex).classList.add("selected")
+		if (selectedListItemIndex < items.length) {
+			items.item(selectedListItemIndex).classList.add("selected")
 		}
 	}
 	
-	const selectTab = function(i) {
-		port.postMessage({
-			command: "select-tab",
-			value: i
-		})
+	const selectTab = function(index) {
+		var tabId = tabIdForIndex(index);
+		chrome.tabs.update(tabId, {highlighted: true, active:true})
+		window.close();
 	}
 
 	const blur = function(event) {
 		input.focus()
 	}
 
-	const click = function(event) {
-		if (event.target.tagName != "LI") {
+	const listItemClicked = function(event) {
+		if (event.button != 0) {
 			return;
 		}
 
 		var index = [].indexOf.call(event.target.parentNode.children, event.target);
 
-		port.postMessage({
-			command: "log",
-			value: index
-		})
-
-		if (index != -1) {
-			selectTab(index);
+		if (index == -1) {
+			return;
 		}
 
+		selectTab(index);
+	}
+
+	const closeButtonClicked = function(event) {
+		event.stopPropagation();
+
+		if (event.button != 0) {
+			return;
+		}
+
+		let li = event.target.parentNode;
+		let ul = li.parentNode;
+		let index = [].indexOf.call(ul.children, li);
+
+		if (index == -1) {
+			return;
+		}
+
+		tabModel.closeTab(li.getAttribute('data-id'), function() {
+			li.remove();
+		})
+	}
+
+
+	const load = function(event) {
+		loadTabs()
 	}
 
 	window.addEventListener("input", handleInput, true)
 	window.addEventListener("blur", blur, true)
 	window.addEventListener("keydown", keyDown, true)
-	window.addEventListener("click", click, true)
+	window.addEventListener("load", load, true)
 
 	input.focus();
 })()

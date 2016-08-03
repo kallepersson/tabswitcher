@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Tab Switcher",
   "author": "Kalle Persson",
-  "version": "1.4",
+  "version": "1.4.1",
   "homepage_url": "http://kallepersson.se/tabswitcher",
   "description": "Rapidly filter and switch between tabs",
   "permissions": [
@@ -13,13 +13,6 @@
     "19": "icons/icon-19.png",
     "38": "icons/icon-38.png",
     "48": "icons/icon-48.png"
-  },
-  "background": {
-    "persistent": true,
-    "scripts": [
-      "fuse.js",
-      "background.js"
-    ]
   },
   "browser_action": {
     "default_popup": "switcher.html"
