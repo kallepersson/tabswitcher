@@ -229,9 +229,17 @@
 		})
 	}
 
+	window.setTabs = function(tabs) {
+		tabModel.tabs = tabs
+		tabModel.filteredTabs = tabs
+		createTabList(tabModel.filteredTabs, true)
+
+	}
 
 	const load = function(event) {
-		loadTabs()
+		port.postMessage({
+			command: "request-tabs"
+		})
 	}
 
 	window.addEventListener("input", handleInput, true)
