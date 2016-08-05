@@ -25,6 +25,10 @@
 	}
 
 	chrome.tabs.onUpdated.addListener(updateTabCache)
+	chrome.tabs.onDetached.addListener(updateTabCache)
+	chrome.tabs.onRemoved.addListener(updateTabCache)
+	chrome.tabs.onAttached.addListener(updateTabCache)
+	chrome.tabs.onCreated.addListener(updateTabCache)
 	chrome.windows.onFocusChanged.addListener(updateTabCache)
 
 	chrome.extension.onConnect.addListener(function(port) {
