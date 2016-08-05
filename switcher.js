@@ -21,17 +21,6 @@
 			maxPatternLength: 32,
 			keys: ["title", "url"]
 		}),
-		reloadTabs: function(callback) {
-			chrome.tabs.query({currentWindow:true}, function(tabs) {
-				this.tabs = tabs
-				this.filteredTabs = tabs
-
-				if (callback) {
-					callback()
-				}
-
-			}.bind(this))
-		},
 		filterTabs: function(query) {
 			if (query == this.query) {
 				return false
@@ -61,12 +50,6 @@
 	const filterTabs = function(query) {
 		let shouldClearSelection = tabModel.filterTabs(query)
 		createTabList(tabModel.filteredTabs, shouldClearSelection)
-	}
-
-	const reloadTabs = function() {
-		tabModel.reloadTabs(function(){
-			createTabList(tabModel.filteredTabs, true)
-		})
 	}
 
 	const createTabList = function(tabs, clearSelection) {
