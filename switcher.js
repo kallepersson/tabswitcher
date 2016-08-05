@@ -49,12 +49,12 @@
 
 	const filterTabs = function(query) {
 		let shouldClearSelection = tabModel.filterTabs(query)
-		createTabList(tabModel.filteredTabs, shouldClearSelection)
+		createTabList(tabModel, shouldClearSelection)
 	}
 
-	const createTabList = function(tabs, clearSelection) {
+	const createTabList = function(tabModel, clearSelection) {
 		ul.innerHTML = ""
-		tabs.forEach(function(tab){
+		tabModel.filteredTabs.forEach(function(tab){
 			var li = document.createElement("li")
 			var img = document.createElement("img")
 			// Don't support chrome:// urls for favicons since they won't load
@@ -212,10 +212,11 @@
 		})
 	}
 
-	window.setTabs = function(tabs) {
+	window.setTabs = function(tabs, activeTimestamps) {
 		tabModel.tabs = tabs
 		tabModel.filteredTabs = tabs
-		createTabList(tabModel.filteredTabs, true)
+		tabModel.activeTimestamps = activeTimestamps
+		createTabList(tabModel, true)
 
 	}
 
