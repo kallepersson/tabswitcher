@@ -3,8 +3,8 @@
 	const port = chrome.extension.connect({name: "Connection"})
 	const input = document.getElementById("search")
 	const ul = document.getElementById("tabs")
-	var controlDown = false;
-	var selectedListItemIndex = 0;
+	var controlDown = false
+	var selectedListItemIndex = 0
 
 	const tabModel = {
 		tabs:[],
@@ -23,49 +23,49 @@
 		}),
 		reloadTabs: function(callback) {
 			chrome.tabs.query({currentWindow:true}, function(tabs) {
-				this.tabs = tabs;
-				this.filteredTabs = tabs;
+				this.tabs = tabs
+				this.filteredTabs = tabs
 
 				if (callback) {
-					callback();
+					callback()
 				}
 
 			}.bind(this))
 		},
 		filterTabs: function(query) {
 			if (query == this.query) {
-				return false;
+				return false
 			}
 
-			this.query = query;
+			this.query = query
 
 			if (!this.query || this.query == "") {
-				this.filteredTabs = this.tabs;
+				this.filteredTabs = this.tabs
 			} else {
-				this.fuse.set(this.tabs);
+				this.fuse.set(this.tabs)
 				this.filteredTabs = this.fuse.search(this.query)
-				return true;
+				return true
 			}
 
-			return false; // list did change
+			return false // list did change
 		},
 		closeTab: function(tabId, callback) {
 			chrome.tabs.remove(parseInt(tabId), function() { 
 				if (callback) {
-					callback();
+					callback()
 				}
 			})
 		}
 	}
 
 	const filterTabs = function(query) {
-		let shouldClearSelection = tabModel.filterTabs(query);
-		createTabList(tabModel.filteredTabs, shouldClearSelection);
+		let shouldClearSelection = tabModel.filterTabs(query)
+		createTabList(tabModel.filteredTabs, shouldClearSelection)
 	}
 
-	const loadTabs = function() {
+	const reloadTabs = function() {
 		tabModel.reloadTabs(function(){
-			createTabList(tabModel.filteredTabs, true);
+			createTabList(tabModel.filteredTabs, true)
 		})
 	}
 
@@ -82,28 +82,28 @@
 			}
 			var span = document.createElement("span")
 			var closeButton = document.createElement("button")
-			closeButton.addEventListener('click', closeButtonClicked);
+			closeButton.addEventListener('click', closeButtonClicked)
 			li.setAttribute('data-id', tab.id)
 			li.appendChild(img)
 			li.appendChild(span)
 			li.appendChild(closeButton)
 			span.innerText = tab.title
-			li.addEventListener('click', listItemClicked);
+			li.addEventListener('click', listItemClicked)
 			ul.appendChild(li)
 		})
 
 		if (clearSelection) {
-			selectedListItemIndex = 0;
+			selectedListItemIndex = 0
 		}
 
 		updateSelection()
 	}
 
 	const tabIdForIndex = function(index) {
-		let items = ul.querySelectorAll("li");
-		let li = items[index];
+		let items = ul.querySelectorAll("li")
+		let li = items[index]
 		if (li) {
-			return parseInt(li.getAttribute("data-id"));
+			return parseInt(li.getAttribute("data-id"))
 		}
 	}
 
@@ -117,7 +117,7 @@
 
 	const keyUp = function(event) {
 		if (event.code == "ControlLeft") {
-			controlDown = false;
+			controlDown = false
 		}
 	}
 
@@ -152,21 +152,21 @@
 				}
 			break
 			case "ControlLeft":
-				controlDown = true;
-			break;
+				controlDown = true
+			break
 			case "KeyX":
 			if (controlDown) {
 				var li = ul.querySelector(".selected")
 				if (!li) {
-					return;
+					return
 				}
 
 				tabModel.closeTab(li.getAttribute('data-id'), function() {
-					li.remove();
-					updateSelection();
-				});
+					li.remove()
+					updateSelection()
+				})
 			}
-			break;
+			break
 		}
 
 		updateSelection()
@@ -186,9 +186,9 @@
 	}
 	
 	const selectTab = function(index) {
-		var tabId = tabIdForIndex(index);
+		var tabId = tabIdForIndex(index)
 		chrome.tabs.update(tabId, {highlighted: true, active:true})
-		window.close();
+		window.close()
 	}
 
 	const blur = function(event) {
@@ -197,35 +197,35 @@
 
 	const listItemClicked = function(event) {
 		if (event.button != 0) {
-			return;
+			return
 		}
 
-		var index = [].indexOf.call(event.target.parentNode.children, event.target);
+		var index = [].indexOf.call(event.target.parentNode.children, event.target)
 
 		if (index == -1) {
-			return;
+			return
 		}
 
-		selectTab(index);
+		selectTab(index)
 	}
 
 	const closeButtonClicked = function(event) {
-		event.stopPropagation();
+		event.stopPropagation()
 
 		if (event.button != 0) {
-			return;
+			return
 		}
 
-		let li = event.target.parentNode;
-		let ul = li.parentNode;
-		let index = [].indexOf.call(ul.children, li);
+		let li = event.target.parentNode
+		let ul = li.parentNode
+		let index = [].indexOf.call(ul.children, li)
 
 		if (index == -1) {
-			return;
+			return
 		}
 
 		tabModel.closeTab(li.getAttribute('data-id'), function() {
-			li.remove();
+			li.remove()
 		})
 	}
 
@@ -239,5 +239,5 @@
 	window.addEventListener("keydown", keyDown, true)
 	window.addEventListener("load", load, true)
 
-	input.focus();
+	input.focus()
 })()
