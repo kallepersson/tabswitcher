@@ -3,12 +3,14 @@
 	const port = chrome.extension.connect({name: "Connection"})
 	const input = document.getElementById("search")
 	const ul = document.getElementById("tabs")
-	var controlDown = false
+	const tabOldInterval = 60 * 30 * 1000; // 30 minutes
+	var modifiers = {ctrl:false, shift:false}
 	var selectedListItemIndex = 0
 
 	const tabModel = {
 		tabs:[],
 		filteredTabs:[],
+		activeTimestamps:{},
 		query:"",
 		fuse: new Fuse(this.tabs, {
 			caseSensitive: false,
@@ -44,6 +46,13 @@
 					callback()
 				}
 			})
+		},
+		activeTimestampForTab: function(tab) {
+			if(!tab.id || !this.activeTimestamps[tab.id]) {
+				return Date.now()
+			}
+
+			return this.activeTimestamps[tab.id];
 		}
 	}
 
@@ -57,7 +66,7 @@
 		tabModel.filteredTabs.forEach(function(tab){
 			var li = document.createElement("li")
 			var img = document.createElement("img")
-			// Don't support chrome:// urls for favicons since they won't load
+			// Don"t support chrome:// urls for favicons since they won't load
 			if (tab.favIconUrl && tab.favIconUrl.indexOf('chrome://') == -1) {
 				img.src = tab.favIconUrl
 			} else {
@@ -66,12 +75,18 @@
 			var span = document.createElement("span")
 			var closeButton = document.createElement("button")
 			closeButton.addEventListener('click', closeButtonClicked)
-			li.setAttribute('data-id', tab.id)
+			li.setAttribute("data-id", tab.id)
 			li.appendChild(img)
 			li.appendChild(span)
 			li.appendChild(closeButton)
 			span.innerText = tab.title
-			li.addEventListener('click', listItemClicked)
+			li.addEventListener("click", listItemClicked)
+
+			// Decide whether the tab is old1
+			if(Date.now() - tabModel.activeTimestampForTab(tab) > tabOldInterval) {
+				li.classList.add("old")
+			}
+
 			ul.appendChild(li)
 		})
 
@@ -100,7 +115,9 @@
 
 	const keyUp = function(event) {
 		if (event.code == "ControlLeft") {
-			controlDown = false
+			modifiers.ctrl = false
+		} else if (event.code = "ShiftLeft") {
+			modifiers.shift = false;
 		}
 	}
 
@@ -135,19 +152,33 @@
 				}
 			break
 			case "ControlLeft":
-				controlDown = true
+				modifiers.ctrl = true
+			break
+			case "ShiftLeft":
+				modifiers.shift = true
 			break
 			case "KeyX":
-			if (controlDown) {
-				var li = ul.querySelector(".selected")
-				if (!li) {
-					return
-				}
+			if (modifiers.ctrl) {
+				// Holding shift closes all old tabs
+				if (modifiers.shift) {
+					[].forEach.call(ul.querySelectorAll(".old"), function(li) {
+						tabModel.closeTab(li.getAttribute("data-id"), function() {
+							li.remove()
+							updateSelection()
+						})
+					})
+				} else {
+					// Otherwise close selected tab
+					var li = ul.querySelector(".selected")
+					if (!li) {
+						return
+					}
 
-				tabModel.closeTab(li.getAttribute('data-id'), function() {
-					li.remove()
-					updateSelection()
-				})
+					tabModel.closeTab(li.getAttribute("data-id"), function() {
+						li.remove()
+						updateSelection()
+					})
+				}
 			}
 			break
 		}
@@ -207,7 +238,7 @@
 			return
 		}
 
-		tabModel.closeTab(li.getAttribute('data-id'), function() {
+		tabModel.closeTab(li.getAttribute("data-id"), function() {
 			li.remove()
 		})
 	}

@@ -1,9 +1,6 @@
 html, body {
 	width: 500px;
 }
-li:hover, .selected {
-	background: #eee;
-}
 
 input {
 	display: block;
@@ -27,6 +24,14 @@ li {
 	overflow: hidden;
 	border-bottom: 1px solid #eee;
 	position: relative;
+}
+
+li.old {
+	background: rgb(245,245,245);
+}
+
+li:hover, li.selected li.old:hover{
+	background: Highlight;
 }
 
 li img {
