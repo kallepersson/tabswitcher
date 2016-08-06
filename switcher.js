@@ -96,6 +96,14 @@
 			})
 			this.closeTabs(tabIdsToClose)
 		},
+		sortTabs: function() {
+			this.filteredTabs = this.filteredTabs.sort(function(a, b) {
+				return a.url.localeCompare(b.url)
+			})
+			this.filteredTabs.forEach(function(tab, i) {
+				chrome.tabs.move(tab.id, {index:i})
+			})
+		},
 		reloadTabs: function() {
 			this.getFilteredTabIds().forEach(function(tabId) {
 				chrome.tabs.reload(tabId)
@@ -125,7 +133,8 @@
 		close: tabController.closeTabs,
 		detach: tabController.detachTabs,
 		reload: tabController.reloadTabs,
-		deduplicate: tabController.deduplicateTabs
+		deduplicate: tabController.deduplicateTabs,
+		sort: tabController.sortTabs,
 	}
 
 	const filterTabs = function(query) {
