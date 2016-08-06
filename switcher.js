@@ -396,6 +396,7 @@
 	const resetInput = () => {
 		inputField.value = ""
 		filterTabs(parseQueryFromInput(inputField.value))
+		updateMessageBar()
 	}
 
 	const load = (event) => {
