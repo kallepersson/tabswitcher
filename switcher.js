@@ -1,7 +1,7 @@
 (function(){
 
 	const port = chrome.extension.connect({name: "Connection"})
-	const input = document.getElementById("search")
+	const inputField = document.getElementById("search")
 	const ul = document.getElementById("tabs")
 	const tabOldInterval = 60 * 30 * 1000; // 30 minutes
 	var modifiers = {ctrl:false, shift:false}
@@ -154,7 +154,7 @@
 	}
 
 	const keyDown = function(event) {
-		if (event.target != input) {
+		if (event.target != inputField) {
 			return
 		}
 
@@ -176,10 +176,10 @@
 				}
 			break
 			case "Enter":
-				executeInput(input.value)
+				executeInput(inputField.value)
 			break
 			case "Escape":
-				if (input.value == "") {
+				if (inputField.value == "") {
 					window.close()
 				}
 			break
@@ -247,7 +247,7 @@
 	}
 
 	const blur = function(event) {
-		input.focus()
+		inputField.focus()
 	}
 
 	const listItemClicked = function(event) {
@@ -296,41 +296,60 @@
 	}
 
 	const updateMessageBar = () => {
-		if ((input.value.indexOf(":") != -1)) {
+		if ((inputField.value.indexOf(":") != -1)) {
 			messageBar.classList.add("showing")
 		} else {
 			messageBar.classList.remove("showing")
 		}
+
+		let message = "Press &#9166; to "
+		message += parseCommandsFromInput(inputField.value).join(", ")
+		message += " " + tabController.filteredTabs.length + " "
+		message += tabController.filteredTabs.length == 1 ? "tab" : "tabs"
+		messageBar.innerHTML = message
 	}
 
 	const handleInput = function(event) {
-		if (event.target != input) {
+		if (event.target != inputField) {
 			return
 		}
 
 		updateMessageBar();
 
-		filterTabs(input.value)
+		filterTabs(parseQueryFromInput(inputField.value))
 	}
 
-	const parseInputCommands = function(inputText) {
-		return inputText.split(":");
+	const parseCommandsFromInput = function(inputText) {
+		let commands = inputText.split(":");
+
+		// If inputText string starts without a command, it's a query so remove it
+		if (inputText.charAt(0) != ":") {
+			commands.splice(0, 1);
+		}
+		return commands;
+	}
+
+	const parseQueryFromInput = function(inputText) {
+		console.log(inputText)
+		// If inputText starts with a : there is no query to filter by
+		if (inputText.charAt(0) == ":") {
+			return ""
+		}
+
+		let commands = inputText.split(":");
+		return commands[0];
 	}
 
 	const executeInput = function(inputText) {
+		let commands = parseCommandsFromInput(inputText)
+		// If this is just a query string with no commands, just select the tab
+		let query = parseQueryFromInput(inputText)
 
-		let commands = parseInputCommands(inputText)
+		console.log(commands, query)
 
-		if (inputText.charAt(0) != ":") {
-			
-			// If this is just a query string with no commands, just select the tab
-			if (commands.length == 1) {
-				selectTab(selectedListItemIndex)
-				return;
-			}
-
-			// If inputText string starts without a command, it's a query so remove it
-			commands.splice(0, 1);
+		if (commands.length == 0) {
+			selectTab(selectedListItemIndex)
+			return;
 		}
 
 		// start processing list of commands and manipulate model
@@ -346,8 +365,8 @@
 	}
 
 	const resetInput = () => {
-		input.value = ""
-		filterTabs(input.value)
+		inputField.value = ""
+		filterTabs(parseQueryFromInput(inputField.value))
 	}
 
 	const load = (event) => {
@@ -369,5 +388,5 @@
 	window.addEventListener("keydown", keyDown, true)
 	window.addEventListener("load", load, true)
 
-	input.focus()
+	inputField.focus()
 })()
