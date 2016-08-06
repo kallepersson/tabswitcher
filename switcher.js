@@ -7,7 +7,7 @@
 	var modifiers = {ctrl:false, shift:false}
 	var selectedListItemIndex = 0
 
-	const tabModel = {
+	const tabController = {
 		tabs:[],
 		filteredTabs:[],
 		activeTimestamps:{},
@@ -17,13 +17,15 @@
 			includeScore: false,
 			shouldSort: true,
 			tokenize: false,
-			threshold: 0.6,
+			threshold: 0.5,
 			location: 0,
 			distance: 100,
 			maxPatternLength: 32,
 			keys: ["title", "url"]
 		}),
 		filterTabs: function(query) {
+			query = query.split(":")[0];
+
 			if (query == this.query) {
 				return false
 			}
@@ -40,12 +42,42 @@
 
 			return false // list did change
 		},
-		closeTab: function(tabId, callback) {
-			chrome.tabs.remove(parseInt(tabId), function() { 
+		removeTabsFromModel: function(tabIds) {
+			this.tabs = this.tabs.filter(function(tab) {
+				return (tabIds.indexOf(tab.id) == -1)
+			})
+			this.filteredTabs = this.filteredTabs.filter(function(tab) {
+				return (tabIds.indexOf(tab.id) == -1)
+			})
+		},
+		closeTabs: function(callback) {
+			let tabIds = this.filteredTabs.map(function(tab){
+				return parseInt(tab.id)
+			})
+			this.removeTabsFromModel(tabIds)
+			chrome.tabs.remove(tabIds, function() { 
+				getElementsForTabIds(tabIds).forEach(function(elm) {
+					elm.remove()
+				})
 				if (callback) {
 					callback()
 				}
 			})
+		},
+		deduplicateTabs: function(callback) {
+			if (callback) {
+				callback()
+			}
+		},
+		reloadTabs: function(callback) {
+			if (callback) {
+				callback()
+			}
+		},
+		detachTabs: function(callback) {
+			if (callback) {
+				callback()
+			}
 		},
 		activeTimestampForTab: function(tab) {
 			if(!tab.id || !this.activeTimestamps[tab.id]) {
@@ -56,14 +88,21 @@
 		}
 	}
 
-	const filterTabs = function(query) {
-		let shouldClearSelection = tabModel.filterTabs(query)
-		createTabList(tabModel, shouldClearSelection)
+	const commandMap = {
+		close: tabController.closeTabs,
+		detach: tabController.detachTabs,
+		reload: tabController.reloadTabs,
+		deduplicate: tabController.deduplicateTabs
 	}
 
-	const createTabList = function(tabModel, clearSelection) {
+	const filterTabs = function(query) {
+		let shouldClearSelection = tabController.filterTabs(query)
+		createTabList(tabController, shouldClearSelection)
+	}
+
+	const createTabList = function(tabController, clearSelection) {
 		ul.innerHTML = ""
-		tabModel.filteredTabs.forEach(function(tab){
+		tabController.filteredTabs.forEach(function(tab){
 			var li = document.createElement("li")
 			var img = document.createElement("img")
 			// Don"t support chrome:// urls for favicons since they won't load
@@ -75,7 +114,7 @@
 			var span = document.createElement("span")
 			var closeButton = document.createElement("button")
 			closeButton.addEventListener('click', closeButtonClicked)
-			li.setAttribute("data-id", tab.id)
+			li.id = tab.id
 			li.appendChild(img)
 			li.appendChild(span)
 			li.appendChild(closeButton)
@@ -83,7 +122,7 @@
 			li.addEventListener("click", listItemClicked)
 
 			// Decide whether the tab is old1
-			if(Date.now() - tabModel.activeTimestampForTab(tab) > tabOldInterval) {
+			if(Date.now() - tabController.activeTimestampForTab(tab) > tabOldInterval) {
 				li.classList.add("old")
 			}
 
@@ -101,7 +140,7 @@
 		let items = ul.querySelectorAll("li")
 		let li = items[index]
 		if (li) {
-			return parseInt(li.getAttribute("data-id"))
+			return parseInt(li.id)
 		}
 	}
 
@@ -144,7 +183,7 @@
 				}
 			break
 			case "Enter":
-				selectTab(selectedListItemIndex)
+				parseInput(input.value)
 			break
 			case "Escape":
 				if (input.value == "") {
@@ -162,7 +201,7 @@
 				// Holding shift closes all old tabs
 				if (modifiers.shift) {
 					[].forEach.call(ul.querySelectorAll(".old"), function(li) {
-						tabModel.closeTab(li.getAttribute("data-id"), function() {
+						tabController.closeTabs([li.id], function() {
 							li.remove()
 							updateSelection()
 						})
@@ -174,7 +213,7 @@
 						return
 					}
 
-					tabModel.closeTab(li.getAttribute("data-id"), function() {
+					tabController.closeTabs([li.id], function() {
 						li.remove()
 						updateSelection()
 					})
@@ -190,6 +229,7 @@
 		var selected = ul.querySelector(".selected")
 		var items = ul.querySelectorAll("li")
 
+
 		if (selected) {
 			selected.classList.remove("selected")
 		}
@@ -197,6 +237,14 @@
 		if (selectedListItemIndex < items.length) {
 			items.item(selectedListItemIndex).classList.add("selected")
 		}
+	}
+
+	const getElementsForTabIds = function(tabIds) {
+		return tabIds.map(function(tabId) {
+			return document.getElementById(tabId)
+		}).filter(function(tabElement) {
+			return tabElement != null
+		})
 	}
 	
 	const selectTab = function(index) {
@@ -238,16 +286,16 @@
 			return
 		}
 
-		tabModel.closeTab(li.getAttribute("data-id"), function() {
+		tabController.closeTabs([li.id], function() {
 			li.remove()
 		})
 	}
 
 	window.setTabs = function(tabs, activeTimestamps) {
-		tabModel.tabs = tabs
-		tabModel.filteredTabs = tabs
-		tabModel.activeTimestamps = activeTimestamps
-		createTabList(tabModel, true)
+		tabController.tabs = tabs
+		tabController.filteredTabs = tabs
+		tabController.activeTimestamps = activeTimestamps
+		createTabList(tabController, true)
 
 	}
 
@@ -255,6 +303,38 @@
 		port.postMessage({
 			command: "request-tabs"
 		})
+	}
+
+	const parseInput = function(inputText) {
+
+		let commands = inputText.split(":");
+
+		if (inputText.charAt(0) != ":") {
+			
+			// If this is just a query string with no commands, just select the tab
+			if (commands.length == 1) {
+
+				selectTab(selectedListItemIndex)
+				return;
+			}
+
+			// If inputText string starts without a command, it's a query so remove it
+			commands.splice(0, 1);
+		}
+
+		// start processing list of commands and manipulate model
+		commands.forEach(function(command){
+			let commandMethod = commandMap[command]
+			if (commandMethod) {
+				commandMethod.bind(tabController).call()
+				//tabController[commandMap[command]]()
+			} else {
+			}
+		})
+
+		// Reset input field
+		input.value = ""
+		filterTabs(input.value)
 	}
 
 	window.addEventListener("input", handleInput, true)
