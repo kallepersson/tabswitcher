@@ -6,6 +6,7 @@
 	const tabOldInterval = 60 * 30 * 1000; // 30 minutes
 	var modifiers = {ctrl:false, shift:false}
 	var selectedListItemIndex = 0
+	var messageBar = document.getElementById("message")
 
 	const tabController = {
 		tabs:[],
@@ -144,14 +145,6 @@
 		}
 	}
 
-	const handleInput = function(event) {
-		if (event.target != input) {
-			return
-		}
-
-		filterTabs(input.value)
-	}
-
 	const keyUp = function(event) {
 		if (event.code == "ControlLeft") {
 			modifiers.ctrl = false
@@ -183,7 +176,7 @@
 				}
 			break
 			case "Enter":
-				parseInput(input.value)
+				executeInput(input.value)
 			break
 			case "Escape":
 				if (input.value == "") {
@@ -271,6 +264,17 @@
 		selectTab(index)
 	}
 
+	const listItemHovered = function(event) {
+		var index = [].indexOf.call(event.target.parentNode.children, event.target)
+
+		if (index == -1) {
+			return
+		}
+
+		selectedListItemIndex = index
+		updateSelection()
+	}
+
 	const closeButtonClicked = function(event) {
 		event.stopPropagation()
 
@@ -291,29 +295,36 @@
 		})
 	}
 
-	window.setTabs = function(tabs, activeTimestamps) {
-		tabController.tabs = tabs
-		tabController.filteredTabs = tabs
-		tabController.activeTimestamps = activeTimestamps
-		createTabList(tabController, true)
-
+	const updateMessageBar = () => {
+		if ((input.value.indexOf(":") != -1)) {
+			messageBar.classList.add("showing")
+		} else {
+			messageBar.classList.remove("showing")
+		}
 	}
 
-	const load = function(event) {
-		port.postMessage({
-			command: "request-tabs"
-		})
+	const handleInput = function(event) {
+		if (event.target != input) {
+			return
+		}
+
+		updateMessageBar();
+
+		filterTabs(input.value)
 	}
 
-	const parseInput = function(inputText) {
+	const parseInputCommands = function(inputText) {
+		return inputText.split(":");
+	}
 
-		let commands = inputText.split(":");
+	const executeInput = function(inputText) {
+
+		let commands = parseInputCommands(inputText)
 
 		if (inputText.charAt(0) != ":") {
 			
 			// If this is just a query string with no commands, just select the tab
 			if (commands.length == 1) {
-
 				selectTab(selectedListItemIndex)
 				return;
 			}
@@ -328,16 +339,32 @@
 			if (commandMethod) {
 				commandMethod.bind(tabController).call()
 				//tabController[commandMap[command]]()
-			} else {
 			}
 		})
 
-		// Reset input field
+		resetInput()
+	}
+
+	const resetInput = () => {
 		input.value = ""
 		filterTabs(input.value)
 	}
 
+	const load = (event) => {
+		port.postMessage({
+			command: "request-tabs"
+		})
+	}
+
+	window.setTabs = function(tabs, activeTimestamps) {
+		tabController.tabs = tabs
+		tabController.filteredTabs = tabs
+		tabController.activeTimestamps = activeTimestamps
+		createTabList(tabController, true)
+	}
+
 	window.addEventListener("input", handleInput, true)
+	window.addEventListener("mouseover", listItemHovered, true)
 	window.addEventListener("blur", blur, true)
 	window.addEventListener("keydown", keyDown, true)
 	window.addEventListener("load", load, true)
