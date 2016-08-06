@@ -24,6 +24,7 @@ li {
 	overflow: hidden;
 	border-bottom: 1px solid #eee;
 	position: relative;
+	font: menu;
 }
 
 li.old {
@@ -71,4 +72,16 @@ li button:active {
 
 button:hover {
 	border-color: black;
+}
+
+#message {
+	text-align: center;
+	padding: 5px 0;
+	font: status-bar;
+	background: ButtonHighlight;
+	display: none;
+}
+
+#message.showing {
+	display: block;
 }
