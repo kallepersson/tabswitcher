@@ -68,10 +68,13 @@
 				return (tabIds.indexOf(tab.id) == -1)
 			})
 		},
-		closeTabs: function() {
-			let tabIds = this.filteredTabs.map(function(tab){
-				return parseInt(tab.id)
-			})
+		closeTabs: function(tabIds) {
+			// Default to visible tabs if tabIds is empty
+			if (!tabIds) {
+				tabIds = this.filteredTabs.map(function(tab){
+					return parseInt(tab.id)
+				})
+			}
 			this.removeTabsFromModel(tabIds)
 			chrome.tabs.remove(tabIds, () => { 
 				getElementsForTabIds(tabIds).forEach(function(elm) {
@@ -80,7 +83,18 @@
 			})
 		},
 		deduplicateTabs: function() {
-
+			let tabIdsToClose = []
+			let collectedURLs = []
+			this.filteredTabs.forEach(function(tab) {
+				// Get rid of # – might be a mistake
+				let url = tab.url.split("#")[0]
+				if (collectedURLs.indexOf(url) == -1) {
+					collectedURLs.push(url)
+				} else {
+					tabIdsToClose.push(tab.id)
+				}
+			})
+			this.closeTabs(tabIdsToClose)
 		},
 		reloadTabs: function() {
 			this.getFilteredTabIds().forEach(function(tabId) {
