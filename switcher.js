@@ -36,13 +36,25 @@
 				return false
 			}
 
+			let reverseFilter = query.charAt(0) == "!"
+			if (reverseFilter) {
+				query = query.substring(1)
+			}
+
 			this.query = query
 
 			if (!this.query || this.query == "") {
 				this.filteredTabs = this.tabs
 			} else {
 				this.fuse.set(this.tabs)
-				this.filteredTabs = this.fuse.search(this.query)
+				let filteredTabs = this.fuse.search(this.query)
+				if (reverseFilter) {
+					filteredTabs = this.tabs.filter(function(tab){
+						return filteredTabs.indexOf(tab) == -1
+					})
+				}
+
+				this.filteredTabs = filteredTabs
 				return true
 			}
 
@@ -336,7 +348,6 @@
 	}
 
 	const parseQueryFromInput = function(inputText) {
-		console.log(inputText)
 		// If inputText starts with a : there is no query to filter by
 		if (inputText.charAt(0) == ":") {
 			return ""
@@ -350,8 +361,6 @@
 		let commands = parseCommandsFromInput(inputText)
 		// If this is just a query string with no commands, just select the tab
 		let query = parseQueryFromInput(inputText)
-
-		console.log(commands, query)
 
 		if (commands.length == 0) {
 			selectTab(selectedListItemIndex)
