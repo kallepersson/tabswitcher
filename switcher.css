@@ -30,7 +30,7 @@ li.old {
 	background: rgb(245,245,245);
 }
 
-li:hover, li.selected li.old:hover{
+li:hover, li.selected, li.old:hover{
 	background: Highlight;
 }
 
