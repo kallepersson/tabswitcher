@@ -24,6 +24,11 @@
 			maxPatternLength: 32,
 			keys: ["title", "url"]
 		}),
+		getFilteredTabIds: function() {
+			return this.filteredTabs.map(function(tab){
+				return parseInt(tab.id)
+			})
+		},
 		filterTabs: function(query) {
 			query = query.split(":")[0];
 
@@ -51,34 +56,35 @@
 				return (tabIds.indexOf(tab.id) == -1)
 			})
 		},
-		closeTabs: function(callback) {
+		closeTabs: function() {
 			let tabIds = this.filteredTabs.map(function(tab){
 				return parseInt(tab.id)
 			})
 			this.removeTabsFromModel(tabIds)
-			chrome.tabs.remove(tabIds, function() { 
+			chrome.tabs.remove(tabIds, () => { 
 				getElementsForTabIds(tabIds).forEach(function(elm) {
 					elm.remove()
 				})
-				if (callback) {
-					callback()
-				}
 			})
 		},
-		deduplicateTabs: function(callback) {
-			if (callback) {
-				callback()
-			}
+		deduplicateTabs: function() {
+
 		},
-		reloadTabs: function(callback) {
-			if (callback) {
-				callback()
-			}
+		reloadTabs: function() {
+			this.getFilteredTabIds().forEach(function(tabId) {
+				chrome.tabs.reload(tabId)
+			})
 		},
-		detachTabs: function(callback) {
-			if (callback) {
-				callback()
-			}
+		detachTabs: function() {
+			let tabIds = this.getFilteredTabIds()
+			let firstTabId = tabIds[0]
+			tabIds.splice(0, 1)
+			// Create a window with the first tab, then move the rest
+			chrome.windows.create({tabId:firstTabId}, function(win) {
+				if (tabIds.length > 0) {
+					chrome.tabs.move(tabIds, {windowId: win.id, index: -1})
+				}
+			})
 		},
 		activeTimestampForTab: function(tab) {
 			if(!tab.id || !this.activeTimestamps[tab.id]) {
