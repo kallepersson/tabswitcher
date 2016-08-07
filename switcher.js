@@ -354,16 +354,23 @@
 	}
 
 	const updateMessageLabel = () => {
+		let message = ""
 		if ((inputField.value.indexOf(":") != -1)) {
-			messageLabel.classList.add("showing")
+			message += "Press &#9166; to "
+			let commands = parseCommandsFromInput(inputField.value)
+			if (commands.length > 1) {
+				message += commands.join(", ")
+			} else {
+				message += commands[0]
+			}
+			message += " " + tabController.filteredTabs.length + " "
+			message += tabController.filteredTabs.length == 1 ? "tab" : "tabs"
+			message += "."
 		} else {
-			messageLabel.classList.remove("showing")
+			message += tabController.filteredTabs.length + " "
+			message += tabController.filteredTabs.length == 1 ? "tab" : "tabs"
+			message += " matching."
 		}
-
-		let message = "Press &#9166; to "
-		message += parseCommandsFromInput(inputField.value).join(", ")
-		message += " " + tabController.filteredTabs.length + " "
-		message += tabController.filteredTabs.length == 1 ? "tab" : "tabs"
 		messageLabel.innerHTML = message
 	}
 
@@ -372,9 +379,9 @@
 			return
 		}
 
-		updateMessageLabel();
-
 		filterTabs(parseQueryFromInput(inputField.value))
+
+		updateMessageLabel();
 	}
 
 	const parseCommandsFromInput = function(inputText) {
@@ -384,7 +391,9 @@
 		if (inputText.charAt(0) != ":") {
 			commands.splice(0, 1);
 		}
-		return commands;
+		return commands.filter((command) => {
+			return command.length > 0
+		});
 	}
 
 	const parseQueryFromInput = function(inputText) {
@@ -450,6 +459,7 @@
 		tabController.filteredTabs = tabs
 		tabController.activeTimestamps = activeTimestamps
 		createTabList(tabController, true)
+		updateMessageLabel()
 	}
 
 	window.addEventListener("input", handleInput, true)

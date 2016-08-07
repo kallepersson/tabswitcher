@@ -79,22 +79,39 @@ li button:active {
 
 #statusBar {
 	padding: 5px 5px;
-	font: status-bar;
 	background: ButtonHighlight;
 	display: flex;
 	justify-content: space-between;
 }
 
 #statusBar button {
-	padding: 3px 5px;	
+	padding: 3px 10px;
+	background-image: -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
+	font: 12px BlinkMacSystemFont
+		box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.75);
+			border: 1px solid rgba(0, 0, 0, 0.25);
+	border-radius: 2px;
+	color: #444;
+}
+
+#statusBar button:hover {
+	color: #000;
+	border-color: rgba(0, 0, 0, 0.5);
+}
+
+#statusBar button:focus,
+#statusBar button:active {
+	color: #000;
+	border-color: rgb(77, 144, 254);
+}
+
+#statusBar button:active {
+	background-image: none;
+	background-color: #dedede;
 }
 
 #messageLabel {
+	padding: 3px 0;
 	text-align: center;	
-	display: none;
+	font: 10px BlinkMacSystemFont
 }
-
-#messageLabel.showing {
-	display: block;
-}
-
