@@ -7,6 +7,7 @@
 	var modifiers = {ctrl:false, shift:false}
 	var selectedListItemIndex = 0
 	var messageBar = document.getElementById("message")
+	var hoverLock = false;
 
 	const tabController = {
 		tabs:[],
@@ -257,6 +258,7 @@
 		}
 
 		updateSelection()
+		hoverLock = true;
 	}
 
 	const updateSelection = function() {
@@ -309,6 +311,7 @@
 		var index = [].indexOf.call(event.target.parentNode.children, event.target)
 
 		if (index == -1) {
+		if (index == -1 || hoverLock) {
 			return
 		}
 
@@ -408,7 +411,9 @@
 		updateMessageBar()
 	}
 
-	const load = (event) => {
+	const init = () => {
+		inputField.focus()
+
 		port.postMessage({
 			command: "request-tabs"
 		})
@@ -425,7 +430,11 @@
 	window.addEventListener("mouseover", listItemHovered, true)
 	window.addEventListener("blur", blur, true)
 	window.addEventListener("keydown", keyDown, true)
-	window.addEventListener("load", load, true)
+	window.addEventListener("mousemove", () => {
+		hoverLock = false
+	}, true)
 
-	inputField.focus()
+	init();
+
+	
 })()
