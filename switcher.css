@@ -92,7 +92,6 @@ li button:active {
 #message {
 	text-align: center;	
 	display: none;
-	background: red;
 }
 
 #message.showing {
