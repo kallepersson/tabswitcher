@@ -1,8 +1,7 @@
-#TODO
-
 ##Bugs
 
 * [ ] Selection moves to the 3rd li when hovering the status bar
+* [x] List items are not sorted when sorting tabs 
 
 ##Features
 
