@@ -315,6 +315,10 @@
 	}
 
 	const listItemHovered = function(event) {
+		if (event.target.parentNode != ul) {
+			return
+		}
+
 		var index = [].indexOf.call(event.target.parentNode.children, event.target)
 
 		if (index == -1 || hoverLock) {
