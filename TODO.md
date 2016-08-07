@@ -1,3 +1,3 @@
-* [_] Also re-order list items when sorting tabs 
-* [_] Add NUX and help view (triggered by "?")
-* [_] Add settings view to reconfigure keyboard shortucs
+* [ ] Also re-order list items when sorting tabs 
+* [ ] Add NUX and help view (triggered by "?")
+* [ ] Add settings view to reconfigure keyboard shortucs
