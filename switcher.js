@@ -134,9 +134,13 @@
 
 	const commandMap = {
 		close: tabController.closeTabs,
+		x: tabController.closeTabs,
 		detach: tabController.detachTabs,
+		win: tabController.detachTabs,
 		reload: tabController.reloadTabs,
+		re: tabController.reloadTabs,
 		deduplicate: tabController.deduplicateTabs,
+		dd: tabController.deduplicateTabs,
 		sort: tabController.sortTabs,
 	}
 
