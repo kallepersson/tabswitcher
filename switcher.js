@@ -104,6 +104,7 @@
 			})
 			this.filteredTabs.forEach(function(tab, i) {
 				chrome.tabs.move(tab.id, {index:i})
+				ul.appendChild(document.getElementById(tab.id));
 			})
 		},
 		reloadTabs: function() {
@@ -159,6 +160,7 @@
 			var closeButton = document.createElement("button")
 			closeButton.addEventListener('click', closeButtonClicked)
 			li.id = tab.id
+			li.dataset.url = tab.url
 			li.appendChild(img)
 			li.appendChild(span)
 			li.appendChild(closeButton)
