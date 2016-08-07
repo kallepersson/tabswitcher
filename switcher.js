@@ -237,7 +237,7 @@
 				// Holding shift closes all old tabs
 				if (modifiers.shift) {
 					[].forEach.call(ul.querySelectorAll(".old"), function(li) {
-						tabController.closeTabs([li.id], function() {
+						tabController.closeTabs([parseInt(li.id)], function() {
 							li.remove()
 							updateSelection(true)
 						})
@@ -249,7 +249,7 @@
 						return
 					}
 
-					tabController.closeTabs([li.id], function() {
+					tabController.closeTabs([parseInt(li.id)], function() {
 						li.remove()
 						updateSelection(true)
 					})
@@ -338,7 +338,7 @@
 			return
 		}
 
-		tabController.closeTabs([li.id], function() {
+		tabController.closeTabs([parseInt(li.id)], function() {
 			li.remove()
 		})
 	}
