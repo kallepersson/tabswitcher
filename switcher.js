@@ -7,6 +7,7 @@
 	var modifiers = {ctrl:false, shift:false}
 	var selectedListItemIndex = 0
 	var messageBar = document.getElementById("message")
+	var cleanUpButton = document.getElementById("cleanUpButton")
 	var hoverLock = false;
 
 	const tabController = {
@@ -419,6 +420,11 @@
 
 		port.postMessage({
 			command: "request-tabs"
+		})
+
+		cleanUpButton.addEventListener("click", (event) => {
+			tabController.sortTabs()
+			tabController.deduplicateTabs()
 		})
 	}
 
