@@ -176,7 +176,7 @@
 			selectedListItemIndex = 0
 		}
 
-		updateSelection()
+		updateSelection(true)
 	}
 
 	const tabIdForIndex = function(index) {
@@ -238,7 +238,7 @@
 					[].forEach.call(ul.querySelectorAll(".old"), function(li) {
 						tabController.closeTabs([li.id], function() {
 							li.remove()
-							updateSelection()
+							updateSelection(true)
 						})
 					})
 				} else {
@@ -250,28 +250,32 @@
 
 					tabController.closeTabs([li.id], function() {
 						li.remove()
-						updateSelection()
+						updateSelection(true)
 					})
 				}
 			}
 			break
 		}
 
-		updateSelection()
 		hoverLock = true;
+
+		updateSelection(true)
 	}
 
-	const updateSelection = function() {
+	const updateSelection = function(scrollIntoView) {
 		var selected = ul.querySelector(".selected")
 		var items = ul.querySelectorAll("li")
-
 
 		if (selected) {
 			selected.classList.remove("selected")
 		}
 
 		if (selectedListItemIndex < items.length) {
-			items.item(selectedListItemIndex).classList.add("selected")
+			let element = items.item(selectedListItemIndex)
+			element.classList.add("selected")
+			if (scrollIntoView) {
+				element.scrollIntoView()
+			}
 		}
 	}
 
@@ -310,13 +314,12 @@
 	const listItemHovered = function(event) {
 		var index = [].indexOf.call(event.target.parentNode.children, event.target)
 
-		if (index == -1) {
 		if (index == -1 || hoverLock) {
 			return
 		}
 
 		selectedListItemIndex = index
-		updateSelection()
+		updateSelection(false)
 	}
 
 	const closeButtonClicked = function(event) {

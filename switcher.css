@@ -2,6 +2,13 @@ html, body {
 	width: 500px;
 }
 
+
+
+*, * {
+	margin: 0;
+	padding: 0;
+}
+
 input {
 	display: block;
 	width: 98%;
@@ -11,9 +18,9 @@ input {
 	margin: 5px 5px;
 }
 
-*, * {
-	margin: 0;
-	padding: 0;
+#tabs {
+	max-height: 500px;
+	overflow: auto;
 }
 
 li {
@@ -46,7 +53,7 @@ li img, li span {
 	pointer-events: none;
 }
 
-button {
+li button {
 	position: absolute;
 	top: 0;
 	bottom: 0;
@@ -70,18 +77,25 @@ li button:active {
 	background-image: url("icons/close-active.png");
 }
 
-button:hover {
-	border-color: black;
+#bar {
+	padding: 5px 5px;
+	font: status-bar;
+	background: ButtonHighlight;
+	display: flex;
+	justify-content: space-between;
+}
+
+#bar button {
+	padding: 3px 5px;	
 }
 
 #message {
-	text-align: center;
-	padding: 5px 0;
-	font: status-bar;
-	background: ButtonHighlight;
+	text-align: center;	
 	display: none;
+	background: red;
 }
 
 #message.showing {
 	display: block;
 }
+
