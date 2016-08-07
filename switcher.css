@@ -77,7 +77,7 @@ li button:active {
 	background-image: url("icons/close-active.png");
 }
 
-#bar {
+#statusbar {
 	padding: 5px 5px;
 	font: status-bar;
 	background: ButtonHighlight;
@@ -85,7 +85,7 @@ li button:active {
 	justify-content: space-between;
 }
 
-#bar button {
+#statusbar button {
 	padding: 3px 5px;	
 }
 

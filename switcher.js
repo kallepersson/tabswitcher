@@ -6,8 +6,8 @@
 	const tabOldInterval = 60 * 30 * 1000; // 30 minutes
 	var modifiers = {ctrl:false, shift:false}
 	var selectedListItemIndex = 0
-	var messageBar = document.getElementById("message")
-	var cleanUpButton = document.getElementById("cleanUpButton")
+	var statusBar = document.getElementById("statusBar")
+	var messageLabel = document.getElementById("messageLabel")
 	var hoverLock = false;
 
 	const tabController = {
@@ -343,18 +343,18 @@
 		})
 	}
 
-	const updateMessageBar = () => {
+	const updateMessageLabel = () => {
 		if ((inputField.value.indexOf(":") != -1)) {
-			messageBar.classList.add("showing")
+			messageLabel.classList.add("showing")
 		} else {
-			messageBar.classList.remove("showing")
+			messageLabel.classList.remove("showing")
 		}
 
 		let message = "Press &#9166; to "
 		message += parseCommandsFromInput(inputField.value).join(", ")
 		message += " " + tabController.filteredTabs.length + " "
 		message += tabController.filteredTabs.length == 1 ? "tab" : "tabs"
-		messageBar.innerHTML = message
+		messageLabel.innerHTML = message
 	}
 
 	const handleInput = function(event) {
@@ -362,7 +362,7 @@
 			return
 		}
 
-		updateMessageBar();
+		updateMessageLabel();
 
 		filterTabs(parseQueryFromInput(inputField.value))
 	}
@@ -398,21 +398,24 @@
 		}
 
 		// start processing list of commands and manipulate model
-		commands.forEach(function(command){
-			let commandMethod = commandMap[command]
-			if (commandMethod) {
-				commandMethod.bind(tabController).call()
-				//tabController[commandMap[command]]()
-			}
+		commands.forEach(function(command) { 
+			executeCommand(command)
 		})
 
 		resetInput()
 	}
 
+	const executeCommand = (command) => {
+		let commandMethod = commandMap[command]
+		if (commandMethod) {
+			commandMethod.bind(tabController).call()
+		}
+	}
+
 	const resetInput = () => {
 		inputField.value = ""
 		filterTabs(parseQueryFromInput(inputField.value))
-		updateMessageBar()
+		updateMessageLabel()
 	}
 
 	const init = () => {
@@ -422,9 +425,13 @@
 			command: "request-tabs"
 		})
 
-		cleanUpButton.addEventListener("click", (event) => {
-			tabController.sortTabs()
-			tabController.deduplicateTabs()
+		let buttons = statusBar.querySelectorAll("button")
+		Array().forEach.call(buttons, function(button) {
+			button.addEventListener("click", (event) => {
+				event.target.dataset.commands.split(",").forEach((command) => {
+					executeCommand(command)
+				})
+			})
 		})
 	}
 

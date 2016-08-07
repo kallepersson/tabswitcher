@@ -6,9 +6,9 @@
 	<body>
 		<input type="search" id="search" placeholder="Filter open tabs">
 		<ul id="tabs"></ul>
-		<div id="bar">
-			<div id="message"></div>
-			<button id="cleanUpButton">Clean up</button>
+		<div id="statusBar">
+			<div id="messageLabel"></div>
+			<button data-commands="deduplicate,sort">Clean up</button>
 		</div>
 		<script src="fuse.js"></script>
 		<script src="switcher.js"></script>
