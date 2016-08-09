@@ -7,9 +7,12 @@
 		<input type="search" id="search" placeholder="Filter open tabs">
 		<ul id="tabs"></ul>
 		<div id="statusBar">
-			<button data-commands="deduplicate,sort">Clean up</button>
-			<div id="messageLabel"></div>
-			<button data-commands="close">Close all</button>
+			<div id="messageLabel"><span class="placeholder"></span> matching</div>
+			<div id="buttonWrapper">
+				<button data-commands="deduplicate,sort">Close duplicates &amp; group</button>
+				<button data-commands="close">Close</button>
+				<button data-commands="detach">Detach</button>
+			</div>
 		</div>
 		<script src="fuse.js"></script>
 		<script src="switcher.js"></script>

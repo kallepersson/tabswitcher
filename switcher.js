@@ -353,9 +353,10 @@
 		})
 	}
 
-	const updateMessageLabel = () => {
+	const updateLabels = () => {
 		let message = ""
-		if ((inputField.value.indexOf(":") != -1)) {
+		if ((inputField.value.indexOf(":") != -1) && inputField.value.length > 1) {
+			// TODO Only extract valid commands and list them
 			message += "Press &#9166; to "
 			let commands = parseCommandsFromInput(inputField.value)
 			if (commands.length > 1) {
@@ -363,15 +364,17 @@
 			} else {
 				message += commands[0]
 			}
-			message += " " + tabController.filteredTabs.length + " "
-			message += tabController.filteredTabs.length == 1 ? "tab" : "tabs"
+			message += " " + generateNumberOfTabsLabel()
 			message += "."
 		} else {
-			message += tabController.filteredTabs.length + " "
-			message += tabController.filteredTabs.length == 1 ? "tab" : "tabs"
+			message += " " + generateNumberOfTabsLabel()
 			message += " matching."
 		}
 		messageLabel.innerHTML = message
+
+		Array().forEach.call(document.querySelectorAll(".placeholder"), function(span) {
+			span.innerHTML = generateNumberOfTabsLabel()
+		})
 	}
 
 	const handleInput = function(event) {
@@ -381,7 +384,7 @@
 
 		filterTabs(parseQueryFromInput(inputField.value))
 
-		updateMessageLabel();
+		updateLabels();
 	}
 
 	const parseCommandsFromInput = function(inputText) {
@@ -434,7 +437,11 @@
 	const resetInput = () => {
 		inputField.value = ""
 		filterTabs(parseQueryFromInput(inputField.value))
-		updateMessageLabel()
+		updateLabels()
+	}
+
+	const generateNumberOfTabsLabel = () => {
+		return tabController.filteredTabs.length + " " + (tabController.filteredTabs.length == 1 ? "tab" : "tabs")
 	}
 
 	const init = () => {
@@ -459,7 +466,8 @@
 		tabController.filteredTabs = tabs
 		tabController.activeTimestamps = activeTimestamps
 		createTabList(tabController, true)
-		updateMessageLabel()
+		updateLabels()
+
 	}
 
 	window.addEventListener("input", handleInput, true)
