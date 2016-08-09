@@ -115,12 +115,12 @@
 		detachTabs: function() {
 			let tabIds = this.getFilteredTabIds()
 			let firstTabId = tabIds[0]
-			tabIds.splice(0, 1)
-			// Create a window with the first tab, then move the rest
-			chrome.windows.create({tabId:firstTabId}, function(win) {
+			// Create a window with an empty tab, then move them, then close the first tab
+			chrome.windows.create({}, function(win) {
 				if (tabIds.length > 0) {
 					chrome.tabs.move(tabIds, {windowId: win.id, index: -1})
 				}
+				chrome.tabs.remove(win.tabs[0].id)
 			})
 		},
 		activeTimestampForTab: function(tab) {
