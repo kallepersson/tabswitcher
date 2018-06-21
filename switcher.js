@@ -151,10 +151,11 @@
 
 	const createTabList = function(tabController, clearSelection) {
 		ul.innerHTML = ""
-		tabController.filteredTabs.forEach(function(tab){
+		lastWindowId = ""
+		tabController.filteredTabs.forEach(function(tab, i){
 			var li = document.createElement("li")
 			var img = document.createElement("img")
-			// Don"t support chrome:// urls for favicons since they won't load
+			// Don't support chrome:// urls for favicons since they won't load
 			if (tab.favIconUrl && tab.favIconUrl.indexOf('chrome://') == -1) {
 				img.src = tab.favIconUrl
 			} else {
@@ -165,10 +166,18 @@
 			closeButton.addEventListener('click', closeButtonClicked)
 			li.id = tab.id
 			li.dataset.url = tab.url
+			li.dataset.windowId = tab.windowId
+			// Add thicker borders to indicate window groups
+			if (tab.windowId != lastWindowId) {
+				if (i != 0) {
+					li.classList.add("newWindow")
+				}
+				lastWindowId = tab.windowId
+			}
 			li.appendChild(img)
 			li.appendChild(span)
 			li.appendChild(closeButton)
-			span.innerText = tab.title
+			span.innerText = tab.title + tab.windowId
 			li.addEventListener("click", listItemClicked)
 
 			// Decide whether the tab is old1
@@ -191,6 +200,14 @@
 		let li = items[index]
 		if (li) {
 			return parseInt(li.id)
+		}
+	}
+
+	const windowIdForTabIndex = function(index) {
+		let items = ul.querySelectorAll("li")
+		let li = items[index]
+		if (li) {
+			return parseInt(li.dataset.windowId);
 		}
 	}
 
@@ -296,8 +313,10 @@
 	
 	const selectTab = function(index) {
 		var tabId = tabIdForIndex(index)
-		chrome.tabs.update(tabId, {highlighted: true, active:true})
-		window.close()
+		var windowId = windowIdForTabIndex(index)
+		chrome.tabs.update(tabId, {highlighted: true, active:true});
+		chrome.windows.update(windowId, {focused: true});
+		//window.close()
 	}
 
 	const blur = function(event) {
@@ -467,7 +486,6 @@
 		tabController.activeTimestamps = activeTimestamps
 		createTabList(tabController, true)
 		updateLabels()
-
 	}
 
 	window.addEventListener("input", handleInput, true)

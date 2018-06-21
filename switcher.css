@@ -9,7 +9,8 @@ html, body {
 
 input {
 	display: block;
-	width: 98%;
+	float: left;
+	width: 78%;
 	padding: 5px 10px;
 	outline: 0;
 	font-size: 20px;
@@ -18,6 +19,7 @@ input {
 
 #tabs {
 	max-height: 500px;
+	clear: both;
 	overflow: auto;
 }
 
@@ -30,6 +32,10 @@ li {
 	border-bottom: 1px solid #eee;
 	position: relative;
 	font: menu;
+}
+
+li.newWindow {
+	border-top: 1px solid #aaa;
 }
 
 li.old {
@@ -82,14 +88,27 @@ li button:active {
 	justify-content: space-between;
 }
 
-#statusBar button {
+#statusBar button, #allWindowsButton {
 	padding: 3px 10px;
 	background-image: -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
 	font: 12px BlinkMacSystemFont
-		box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.75);
-			border: 1px solid rgba(0, 0, 0, 0.25);
+	box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.75);
+	border: 1px solid rgba(0, 0, 0, 0.25);
 	border-radius: 2px;
 	color: #444;
+}
+
+
+#allWindowsButton {
+	float: right;
+	width: 18%;
+	padding: 3px 10px;
+	margin: 5px 5px 5px 0;
+}
+
+#allWindowsButton.selected {
+	background-image: -webkit-linear-gradient(#cecece, #cecece 38%, #aeaeae);
+	color: #222;
 }
 
 #statusBar button:hover {

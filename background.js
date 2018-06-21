@@ -1,5 +1,4 @@
 (function(){
-
 	var _tabsCache = []
 	var _tabsActivatedTimestamps = {}
 	var _port
@@ -19,9 +18,27 @@
 		popups[0].setTabs(_tabsCache, _tabsActivatedTimestamps)
 	}
 
+	const queryAllTabs = function(resolve, reject) {
+		_tabsCache = [];
+		chrome.windows.getAll({windowTypes:["normal"]}, function(windows) {
+			windows.forEach(function(win) {
+				chrome.tabs.query({windowId:win.id}, function(tabs) {
+					_tabsCache = _tabsCache.concat(tabs)
+				});
+			});	
+		})
+		_updateCount++
+		console.log(_updateCount)
+	}
+
 	const updateTabCache = function() {
-		chrome.tabs.query({currentWindow:true}, function(tabs) {
-			_tabsCache = tabs
+		_tabsCache = [];
+		chrome.windows.getAll({windowTypes:["normal"]}, function(windows) {
+			windows.forEach(function(win) {
+				chrome.tabs.query({windowId:win.id}, function(tabs) {
+					_tabsCache = _tabsCache.concat(tabs)
+				});
+			});	
 		})
 	}
 
@@ -38,10 +55,10 @@
 	chrome.tabs.onAttached.addListener(updateTabCache)
 	chrome.tabs.onMoved.addListener(updateTabCache)
 	chrome.tabs.onCreated.addListener(updateTabCache)
+	chrome.windows.onFocusChanged.addListener(updateTabCache)
 
 	chrome.tabs.onActivated.addListener(updateTabLastActivated)
 
-	chrome.windows.onFocusChanged.addListener(updateTabCache)
 
 	chrome.extension.onConnect.addListener(function(port) {
 		_port = port
