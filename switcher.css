@@ -7,10 +7,19 @@ html, body {
 	padding: 0;
 }
 
-input {
+#topBar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 10;
+	background: #fff;
+	box-shadow: 0px 0px 3px rgba(0,0,0,0.3);
+}
+
+#search {
 	display: block;
-	float: left;
-	width: 78%;
+	width: 98%;
 	padding: 5px 10px;
 	outline: 0;
 	font-size: 20px;
@@ -18,31 +27,44 @@ input {
 }
 
 #tabs {
-	max-height: 500px;
 	clear: both;
-	overflow: auto;
+	min-height: 300px;
+	padding: 40px 0 32px 0;
+}
+
+#filterMessage {
+	position: absolute;
+	top: 32px;
+	left: 0;
+	bottom: 32px;
+	right: 0;
+	pointer-events: none;
+	line-height: 300px;
+	text-align: center;
+	display: none;
+}
+
+#filterMessage.visible {
+	display: block;
 }
 
 li {
 	list-style: none;
+	box-sizing: border-box;
 	padding: 5px 24px 5px 10px;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	overflow: hidden;
-	border-bottom: 1px solid #eee;
+	border-bottom: 1px solid rgba(0,0,0,0.1);
 	position: relative;
 	font: menu;
 }
 
 li.newWindow {
-	border-top: 1px solid #aaa;
+	border-top: 1px solid rgba(0,0,0,0.3);
 }
 
-li.old {
-	background: rgb(245,245,245);
-}
-
-li.selected, li.old:hover{
+li.selected {
 	background: Highlight;
 }
 
@@ -64,51 +86,45 @@ li button {
 	right: 0;
 	display: block;
 	width: 24px;
+	font-size: 12px;
+	font-weight: bold;
 	border: 0;
-	background: transparent url("icons/close.png") no-repeat center 4px;
 	opacity: 0.3;
+	background: transparent;
 }
 
 li:hover button {
 	opacity: 1;
 }
 
-li button:hover  {
-	background-image: url("icons/close-hover.png");
-}
-
-li button:active {
-	background-image: url("icons/close-active.png");
-}
-
 #statusBar {
 	padding: 5px 5px;
+	box-sizing: border-box;
 	background: ButtonHighlight;
-	display: flex;
 	justify-content: space-between;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: #fff;
+	box-shadow: -1px -1px 1px rgba(0,0,0,0.3);
+	height: 32px;
+	text-align: right;
+	display: none;
 }
 
-#statusBar button, #allWindowsButton {
+#statusBar.visible {
+	display: flex;
+}
+
+#statusBar button {
 	padding: 3px 10px;
-	background-image: -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
-	font: 12px BlinkMacSystemFont
+	background: #fff;
+	font: 10px BlinkMacSystemFont
 	box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.75);
 	border: 1px solid rgba(0, 0, 0, 0.25);
-	border-radius: 2px;
+	border-radius: 4px;
 	color: #444;
-}
-
-
-#allWindowsButton {
-	float: right;
-	width: 18%;
-	padding: 3px 10px;
-	margin: 5px 5px 5px 0;
-}
-
-#allWindowsButton.selected {
-	background-image: -webkit-linear-gradient(#cecece, #cecece 38%, #aeaeae);
-	color: #222;
 }
 
 #statusBar button:hover {

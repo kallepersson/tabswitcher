@@ -2,20 +2,23 @@
 <html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="switcher.css">
+		<meta charset="utf-8">
 	</head>
 	<body>
-		<input type="search" id="search" placeholder="Filter open tabs">
-		<button id="allWindowsButton" class="selected">All windows</button>
+		<div id="topBar">
+			<input type="search" id="search" autocomplete="off" placeholder="Filter open tabs">
+		</div>
 		<ul id="tabs"></ul>
 		<div id="statusBar">
 			<div id="messageLabel"><span class="placeholder"></span> matching</div>
 			<div id="buttonWrapper">
-				<button data-commands="deduplicate,sort">Close duplicates &amp; group</button>
-				<button data-commands="close">Close</button>
-				<button data-commands="detach">Detach</button>
+				<button data-commands="deduplicate,sort">Close duplicates</button>
+				<button data-commands="close">Close all</button>
+				<button data-commands="detach">Move to new window</button>
 			</div>
 		</div>
 		<script src="fuse.js"></script>
 		<script src="switcher.js"></script>
+		<div id="filterMessage">The filter does not match any tabs.</div>
 	</body>
 </html>

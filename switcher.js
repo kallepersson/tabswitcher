@@ -3,7 +3,6 @@
 	const port = chrome.extension.connect({name: "Connection"})
 	const inputField = document.getElementById("search")
 	const ul = document.getElementById("tabs")
-	const tabOldInterval = 60 * 30 * 1000; // 30 minutes
 	var modifiers = {ctrl:false, shift:false}
 	var selectedListItemIndex = 0
 	var statusBar = document.getElementById("statusBar")
@@ -13,7 +12,6 @@
 	const tabController = {
 		tabs:[],
 		filteredTabs:[],
-		activeTimestamps:{},
 		query:"",
 		fuse: new Fuse(this.tabs, {
 			caseSensitive: false,
@@ -122,13 +120,6 @@
 				}
 				chrome.tabs.remove(win.tabs[0].id)
 			})
-		},
-		activeTimestampForTab: function(tab) {
-			if(!tab.id || !this.activeTimestamps[tab.id]) {
-				return Date.now()
-			}
-
-			return this.activeTimestamps[tab.id];
 		}
 	}
 
@@ -164,6 +155,7 @@
 			var span = document.createElement("span")
 			var closeButton = document.createElement("button")
 			closeButton.addEventListener('click', closeButtonClicked)
+			closeButton.innerText = "✕";
 			li.id = tab.id
 			li.dataset.url = tab.url
 			li.dataset.windowId = tab.windowId
@@ -177,14 +169,8 @@
 			li.appendChild(img)
 			li.appendChild(span)
 			li.appendChild(closeButton)
-			span.innerText = tab.title + tab.windowId
+			span.innerText = tab.title
 			li.addEventListener("click", listItemClicked)
-
-			// Decide whether the tab is old1
-			if(Date.now() - tabController.activeTimestampForTab(tab) > tabOldInterval) {
-				li.classList.add("old")
-			}
-
 			ul.appendChild(li)
 		})
 
@@ -254,30 +240,6 @@
 			break
 			case "ShiftLeft":
 				modifiers.shift = true
-			break
-			case "KeyX":
-			if (modifiers.ctrl) {
-				// Holding shift closes all old tabs
-				if (modifiers.shift) {
-					[].forEach.call(ul.querySelectorAll(".old"), function(li) {
-						tabController.closeTabs([parseInt(li.id)], function() {
-							li.remove()
-							updateSelection(true)
-						})
-					})
-				} else {
-					// Otherwise close selected tab
-					var li = ul.querySelector(".selected")
-					if (!li) {
-						return
-					}
-
-					tabController.closeTabs([parseInt(li.id)], function() {
-						li.remove()
-						updateSelection(true)
-					})
-				}
-			}
 			break
 		}
 
@@ -403,6 +365,11 @@
 
 		filterTabs(parseQueryFromInput(inputField.value))
 
+		let filterNotEmpty = inputField.value.length > 0;
+		let filterMatchesTabs = tabController.filteredTabs.length > 0;
+		document.getElementById("statusBar").classList.toggle("visible", filterNotEmpty && filterMatchesTabs);
+		document.getElementById("filterMessage").classList.toggle("visible", !filterMatchesTabs);
+
 		updateLabels();
 	}
 
@@ -480,10 +447,9 @@
 		})
 	}
 
-	window.setTabs = function(tabs, activeTimestamps) {
+	window.setTabs = function(tabs) {
 		tabController.tabs = tabs
 		tabController.filteredTabs = tabs
-		tabController.activeTimestamps = activeTimestamps
 		createTabList(tabController, true)
 		updateLabels()
 	}
