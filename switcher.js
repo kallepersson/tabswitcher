@@ -1,6 +1,5 @@
 (function(){
 
-	const port = chrome.extension.connect({name: "Connection"})
 	const inputField = document.getElementById("search")
 	const ul = document.getElementById("tabs")
 	var modifiers = {ctrl:false, shift:false}
@@ -430,12 +429,27 @@
 		return tabController.filteredTabs.length + " " + (tabController.filteredTabs.length == 1 ? "tab" : "tabs")
 	}
 
+	const setTabs = (tabs) => {
+		if (!tabs || !tabs.length) {
+			return;
+		}
+
+		tabController.tabs = tabs
+		tabController.filteredTabs = tabs
+		createTabList(tabController, true)
+		updateLabels()
+	}
+
+	const requestTabs = () => {
+		chrome.storage.sync.get(["tabs"], function(result) {
+			setTabs(result.tabs);
+		});	
+	}
+
 	const init = () => {
 		inputField.focus()
 
-		port.postMessage({
-			command: "request-tabs"
-		})
+		requestTabs();
 
 		let buttons = statusBar.querySelectorAll("button")
 		Array().forEach.call(buttons, function(button) {
@@ -445,13 +459,6 @@
 				})
 			})
 		})
-	}
-
-	window.setTabs = function(tabs) {
-		tabController.tabs = tabs
-		tabController.filteredTabs = tabs
-		createTabList(tabController, true)
-		updateLabels()
 	}
 
 	window.addEventListener("input", handleInput, true)
@@ -464,5 +471,4 @@
 
 	init();
 
-	
 })()

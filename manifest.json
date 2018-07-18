@@ -2,11 +2,12 @@
   "manifest_version": 2,
   "name": "Tab Switcher",
   "author": "Kalle Persson",
-  "version": "1.6.0",
+  "version": "1.7.5",
   "homepage_url": "http://kallepersson.se/tabswitcher",
   "description": "Rapidly filter and switch between windows & tabs",
   "permissions": [
-    "tabs"
+    "tabs",
+    "storage"
   ],
   "icons": {
     "16": "icons/icon-16.png",

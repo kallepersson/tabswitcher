@@ -1,23 +1,7 @@
 (function(){
-	var _tabsCache = []
 	var _port
 	var _updateTimeout = null
-	var _cacheThrottling = 300
-
-	const onMessage = function(message) {
-		if (message.command == "request-tabs") {
-			sendTabs()
-		}
-	}
-
-	const sendTabs = function() {
-		var popups = chrome.extension.getViews({type: "popup"})
-		if (!popups || popups.length == 0) {
-			return
-		}
-
-		popups[0].setTabs(_tabsCache)
-	}
+	var _cacheThrottling = 100
 
 	const updateTabCache = function() {
 		_updateTimeout = null;
@@ -29,11 +13,15 @@
 					tabsCache = tabsCache.concat(tabs)
 					windowTabsRemaining--;
 					if (windowTabsRemaining == 0) {
-						_tabsCache = tabsCache;
+						setTabCache(tabsCache)
 					}
 				});
 			});	
 		})
+	}
+
+	const setTabCache = function(tabCache) {
+		chrome.storage.sync.set({tabs: tabCache}, function() {});
 	}
 
 	const throttledUpdateTabCache = function() {
@@ -48,12 +36,6 @@
 	chrome.tabs.onMoved.addListener(throttledUpdateTabCache)
 	chrome.tabs.onCreated.addListener(throttledUpdateTabCache)
 	chrome.windows.onFocusChanged.addListener(throttledUpdateTabCache)
-
-
-	chrome.extension.onConnect.addListener(function(port) {
-		_port = port
-		_port.onMessage.addListener(onMessage)
-	})
 
 	updateTabCache()
 })()
