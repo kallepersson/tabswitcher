@@ -441,7 +441,7 @@
 	}
 
 	const requestTabs = () => {
-		chrome.storage.sync.get(["tabs"], function(result) {
+		chrome.storage.local.get(["tabs"], function(result) {
 			setTabs(result.tabs);
 		});	
 	}

@@ -21,7 +21,7 @@
 	}
 
 	const setTabCache = function(tabCache) {
-		chrome.storage.sync.set({tabs: tabCache}, function() {});
+		chrome.storage.local.set({tabs: tabCache}, function() {});
 	}
 
 	const throttledUpdateTabCache = function() {
