@@ -165,9 +165,11 @@
 				}
 				lastWindowId = tab.windowId
 			}
-			li.appendChild(img)
-			li.appendChild(span)
-			li.appendChild(closeButton)
+			var div = document.createElement("div")
+			li.appendChild(div)
+			div.appendChild(img)
+			div.appendChild(span)
+			div.appendChild(closeButton)
 			span.innerText = tab.title
 			li.addEventListener("click", listItemClicked)
 			ul.appendChild(li)
@@ -277,7 +279,6 @@
 		var windowId = windowIdForTabIndex(index)
 		chrome.tabs.update(tabId, {highlighted: true, active:true});
 		chrome.windows.update(windowId, {focused: true});
-		//window.close()
 	}
 
 	const blur = function(event) {
@@ -449,7 +450,7 @@
 	const init = () => {
 		inputField.focus()
 
-		requestTabs();
+		
 
 		let buttons = statusBar.querySelectorAll("button")
 		Array().forEach.call(buttons, function(button) {
@@ -459,6 +460,8 @@
 				})
 			})
 		})
+
+		requestTabs();
 	}
 
 	window.addEventListener("input", handleInput, true)
