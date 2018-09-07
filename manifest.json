@@ -2,8 +2,8 @@
   "manifest_version": 2,
   "name": "Tab Switcher",
   "author": "Kalle Persson",
-  "version": "1.7.7",
-  "homepage_url": "http://kallepersson.se/tabswitcher",
+  "version": "1.7.9",
+  "homepage_url": "http://flowapps.co/tabswitcher",
   "description": "Rapidly filter and switch between windows & tabs",
   "options_ui": {
     "page": "options.html",
