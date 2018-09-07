@@ -114,7 +114,7 @@ li button {
 	font-weight: bold;
 	border: 0;
 	opacity: 0.1;
-	padding-right: 6px;
+	padding-right: 8px;
 	width: 48px;
 	text-align: right;
 	background: transparent;
@@ -147,6 +147,7 @@ li:hover button {
 
 #buttonWrapper {
 	text-align: right;
+	padding-right: 38px;
 }
 
 #actionBar button {
@@ -166,13 +167,36 @@ li:hover button {
 
 #actionBar button:focus,
 #actionBar button:hover {
-	color: #1a73e8;
-	background-color: rgba(66, 133, 244, 0.04);
-	border-color: rgb(210, 227, 252);
+	color: #333;
+	background-color: #eee;
+	border-color: #bbb;
 }
 
 #actionBar button:active {
 	background-color: rgba(66, 133, 244, 0.2);
+}
+
+#actionBar #button-menu {
+	position: fixed;
+	display: block;
+	bottom: 9px;
+	right: 4px;
+	font-size: 22px;
+	line-height: 24px;
+	height: 32px;
+	width: 32px;
+	padding: 0;
+	border: 0;
+	margin: 0;
+	background: transparent;
+	border-radius: 22px;
+	color: #888;
+}
+
+#actionBar #button-menu:hover,
+#actionBar #button-menu:active {
+	color: #333;
+	background: #eee;
 }
 
 #messageLabel {
@@ -182,4 +206,34 @@ li:hover button {
 	display: block;
 	color: #bbb;
 	font-size: 12px;
+}
+
+#actionMenu {
+	position: fixed;
+	bottom: 38px;
+	right: 8px;
+	width: 200px;
+	background: #fff;
+	border: 1px solid #ccc;
+	box-shadow: 0px 0px 3px rgba(0,0,0,0.3);
+	border-radius: 5px;
+	display: none;
+	overflow: hidden;
+}
+
+#actionMenu.active {
+	display: block;
+}
+
+#actionMenu button {
+	display: block;
+	width: 100%;
+	text-align: left;
+	font-size: 12px;
+	padding: 12px 12px;
+	border: 0;
+	background: transparent;
+}
+#actionMenu button:hover {
+	background-color: #eee;
 }

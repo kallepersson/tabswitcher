@@ -12,12 +12,15 @@
 		<div id="actionBar">
 			<div id="messageLabel"><span class="placeholder"></span> matching</div>
 			<div id="buttonWrapper">
-				<button id="button-close" data-commands="close" title="Close tabs">Close all</button>
-
-				<button id="button-deduplicate" data-commands="deduplicate" title="Close duplicate tabs">Close duplicates</button>
-				
-				<button id="button-detach" data-commands="detach" title="Move tabs to a separate window">Move to new window</button>
+				<button data-commands="close" title="Close tabs">Close tabs</button>
+				<button id="button-menu" title="More actions">⋮</button>
 			</div>
+		</div>
+		<div id="actionMenu">
+			<button data-commands="deduplicate" title="Close duplicate tabs">Close duplicate tabs</button>
+			<button data-commands="sort" title="Sort tabs alphabetically">Sort tabs</button>
+			<button data-commands="reload" title="Sort tabs alphabetically">Reload tabs</button>
+			<button data-commands="detach" title="Move tabs to a separate window">Move tabs to new window</button>
 		</div>
 		<script src="fuse.js"></script>
 		<script src="switcher.js"></script>

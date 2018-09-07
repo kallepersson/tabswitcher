@@ -6,6 +6,7 @@
 	var selectedListItemIndex = 0
 	var actionBar = document.getElementById("actionBar")
 	var messageLabel = document.getElementById("messageLabel")
+	var actionMenu = document.getElementById("actionMenu")
 	var hoverLock = false;
 	var containerScrollOffset = 0;
 
@@ -359,6 +360,12 @@
 		})
 	}
 
+	const handleClick = (event) => {
+		if (event.target.id != "button-menu") {
+			actionMenu.classList.remove("active");
+		}
+	}
+
 	const handleInput = function(event) {
 		if (event.target != inputField) {
 			return
@@ -450,13 +457,18 @@
 		inputField.focus()
 		containerScrollOffset = parseInt(window.getComputedStyle(document.getElementById("tabs")).getPropertyValue("padding-top"));
 
-		let buttons = actionBar.querySelectorAll("button")
+		let buttons = document.querySelectorAll("#buttonWrapper button, #actionMenu button")
 		Array().forEach.call(buttons, function(button) {
-			button.addEventListener("click", (event) => {
-				event.target.dataset.commands.split(",").forEach((command) => {
-					executeCommand(command)
+			if (button.dataset.commands) {
+				button.addEventListener("click", (event) => {
+					event.target.dataset.commands.split(",").forEach((command) => {
+						executeCommand(command)
+					})
 				})
-			})
+			}
+		})
+		document.getElementById("button-menu").addEventListener("click", (event) => {
+			actionMenu.classList.add("active");
 		})
 
 		chrome.storage.local.get(["tabs"], function(result) {
@@ -467,6 +479,7 @@
 
 	window.addEventListener("DOMContentLoaded", handleDOMReady, true)
 	window.addEventListener("input", handleInput, true)
+	window.addEventListener("click", handleClick, true)
 	window.addEventListener("mouseover", listItemHovered, true)
 	window.addEventListener("blur", blur, true)
 	window.addEventListener("scroll", handleScroll, true)
