@@ -17,7 +17,7 @@
 			includeScore: false,
 			shouldSort: true,
 			tokenize: false,
-			threshold: 0.5,
+			threshold: 0.1,
 			location: 0,
 			distance: 100,
 			maxPatternLength: 32,
@@ -45,7 +45,7 @@
 			if (!this.query || this.query == "") {
 				this.filteredTabs = this.tabs
 			} else {
-				this.fuse.set(this.tabs)
+				this.fuse.setCollection(this.tabs)
 				let filteredTabs = this.fuse.search(this.query)
 				if (reverseFilter) {
 					filteredTabs = this.tabs.filter(function(tab){
@@ -450,8 +450,6 @@
 	const init = () => {
 		inputField.focus()
 
-		
-
 		let buttons = statusBar.querySelectorAll("button")
 		Array().forEach.call(buttons, function(button) {
 			button.addEventListener("click", (event) => {
@@ -473,5 +471,4 @@
 	}, true)
 
 	init();
-
 })()
