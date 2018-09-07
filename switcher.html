@@ -9,12 +9,14 @@
 			<input type="search" id="search" autocomplete="off" placeholder="Filter open tabs">
 		</div>
 		<ul id="tabs"></ul>
-		<div id="statusBar">
+		<div id="actionBar">
 			<div id="messageLabel"><span class="placeholder"></span> matching</div>
 			<div id="buttonWrapper">
-				<button data-commands="deduplicate,sort">Close duplicates</button>
-				<button data-commands="close">Close all</button>
-				<button data-commands="detach">Move to new window</button>
+				<button id="button-close" data-commands="close" title="Close tabs">Close all</button>
+
+				<button id="button-deduplicate" data-commands="deduplicate" title="Close duplicate tabs">Close duplicates</button>
+				
+				<button id="button-detach" data-commands="detach" title="Move tabs to a separate window">Move to new window</button>
 			</div>
 		</div>
 		<script src="fuse.js"></script>

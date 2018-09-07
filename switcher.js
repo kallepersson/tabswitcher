@@ -4,9 +4,10 @@
 	const ul = document.getElementById("tabs")
 	var modifiers = {ctrl:false, shift:false}
 	var selectedListItemIndex = 0
-	var statusBar = document.getElementById("statusBar")
+	var actionBar = document.getElementById("actionBar")
 	var messageLabel = document.getElementById("messageLabel")
 	var hoverLock = false;
+	var containerScrollOffset = 0;
 
 	const tabController = {
 		tabs:[],
@@ -79,7 +80,8 @@
 				getElementsForTabIds(tabIds).forEach(function(elm) {
 					elm.remove()
 				})
-			})
+			});
+			window.setTimeout(updateLabels, 300);
 		},
 		deduplicateTabs: function() {
 			let tabIdsToClose = []
@@ -261,7 +263,7 @@
 			let element = items.item(selectedListItemIndex)
 			element.classList.add("selected")
 			if (scrollIntoView) {
-				element.scrollIntoView()
+				window.scrollTo(0, element.offsetTop - containerScrollOffset);
 			}
 		}
 	}
@@ -321,14 +323,13 @@
 			return
 		}
 
-		let li = event.target.parentNode
+		let li = event.target.parentNode.parentNode
 		let ul = li.parentNode
 		let index = [].indexOf.call(ul.children, li)
 
 		if (index == -1) {
 			return
 		}
-
 		tabController.closeTabs([parseInt(li.id)], function() {
 			li.remove()
 		})
@@ -349,7 +350,7 @@
 			message += "."
 		} else {
 			message += " " + generateNumberOfTabsLabel()
-			message += " matching."
+			message += " matching"
 		}
 		messageLabel.innerHTML = message
 
@@ -367,10 +368,14 @@
 
 		let filterNotEmpty = inputField.value.length > 0;
 		let filterMatchesTabs = tabController.filteredTabs.length > 0;
-		document.getElementById("statusBar").classList.toggle("visible", filterNotEmpty && filterMatchesTabs);
+		document.getElementById("actionBar").classList.toggle("visible", filterNotEmpty && filterMatchesTabs);
 		document.getElementById("filterMessage").classList.toggle("visible", !filterMatchesTabs);
 
 		updateLabels();
+	}
+
+	const handleScroll = function(event) {
+		document.body.classList.toggle("scrolled", window.scrollY > 0);
 	}
 
 	const parseCommandsFromInput = function(inputText) {
@@ -441,16 +446,11 @@
 		updateLabels()
 	}
 
-	const requestTabs = () => {
-		chrome.storage.local.get(["tabs"], function(result) {
-			setTabs(result.tabs);
-		});	
-	}
-
-	const init = () => {
+	const handleDOMReady = () => {
 		inputField.focus()
+		containerScrollOffset = parseInt(window.getComputedStyle(document.getElementById("tabs")).getPropertyValue("padding-top"));
 
-		let buttons = statusBar.querySelectorAll("button")
+		let buttons = actionBar.querySelectorAll("button")
 		Array().forEach.call(buttons, function(button) {
 			button.addEventListener("click", (event) => {
 				event.target.dataset.commands.split(",").forEach((command) => {
@@ -459,16 +459,19 @@
 			})
 		})
 
-		requestTabs();
+		chrome.storage.local.get(["tabs"], function(result) {
+			setTabs(result.tabs);
+			window.scrollTo(0, 0)
+		});	
 	}
 
+	window.addEventListener("DOMContentLoaded", handleDOMReady, true)
 	window.addEventListener("input", handleInput, true)
 	window.addEventListener("mouseover", listItemHovered, true)
 	window.addEventListener("blur", blur, true)
+	window.addEventListener("scroll", handleScroll, true)
 	window.addEventListener("keydown", keyDown, true)
 	window.addEventListener("mousemove", () => {
 		hoverLock = false
 	}, true)
-
-	init();
 })()

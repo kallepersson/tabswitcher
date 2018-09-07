@@ -1,5 +1,7 @@
-html, body {
-	width: 500px;
+body {
+	box-sizing: border-box;
+	min-width: 500px;
+	font-family: Roboto, system-ui, sans-serif;
 }
 
 *, * {
@@ -14,6 +16,9 @@ html, body {
 	right: 0;
 	z-index: 10;
 	background: #fff;
+}
+
+.scrolled #topBar {
 	box-shadow: 0px 0px 3px rgba(0,0,0,0.3);
 }
 
@@ -22,14 +27,18 @@ html, body {
 	width: 98%;
 	padding: 5px 10px;
 	outline: 0;
-	font-size: 16px;
+	font-size: 13px;
 	margin: 5px 5px;
+	box-sizing: border-box;
+	background: #fff;
+	border: 2px solid #ccc;
+	border-radius: 10px;
 }
 
 #tabs {
 	clear: both;
 	min-height: 300px;
-	padding: 40px 0 32px 0;
+	padding: 40px 0 56px 0;
 }
 
 #filterMessage {
@@ -50,13 +59,11 @@ html, body {
 
 li {
 	list-style: none;
-	box-sizing: border-box;
 	padding: 5px 24px 5px 10px;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	border-bottom: 1px solid rgba(0,0,0,0.1);
 	position: relative;
-	font: menu;
+	font-size: 13px;
 }
 
 li div {
@@ -65,23 +72,24 @@ li div {
 }
 
 li.newWindow {
-	border-top: 16px solid transparent;
+	border-top: 24px solid #fff;
 }
 
 li.newWindow::after {
 	position: absolute;
-	top: -16px;
-	height: 16px;
-	left: 0;
-	right: 0;
+	top: -12px;
+	height: 12px;
+	left: 12px;
+	right: 24px;
 	display: block;
 	background: linear-gradient(#ddd, #eee);
-	border-top: 1px solid #999;
+	background: #fff;
+	border-top: 1px solid #ddd;
 	content: "";
 }
 
 li.selected {
-	background-color: Highlight;
+	background-color: #eee;
 }
 
 li img {
@@ -105,62 +113,73 @@ li button {
 	font-size: 12px;
 	font-weight: bold;
 	border: 0;
-	opacity: 0.3;
+	opacity: 0.1;
+	padding-right: 6px;
+	width: 48px;
+	text-align: right;
 	background: transparent;
 }
 
+li.selected button,
 li:hover button {
 	opacity: 1;
 }
 
-#statusBar {
-	padding: 5px 5px;
+#actionBar {
+	padding: 7px 5px 0 5px;
 	box-sizing: border-box;
-	background: ButtonHighlight;
-	justify-content: space-between;
 	position: fixed;
 	bottom: 0;
 	left: 0;
 	right: 0;
 	background: #fff;
-	box-shadow: -1px -1px 1px rgba(0,0,0,0.3);
-	height: 32px;
+	color: #fff;
+	box-shadow: -1px 0 1px rgba(0,0,0,0.3);
 	text-align: right;
 	display: none;
+	height: 48px;
+	display: block;
 }
 
-#statusBar.visible {
-	display: flex;
+#actionBar.visible {
+	display: block;
 }
 
-#statusBar button {
-	padding: 3px 10px;
+#buttonWrapper {
+	text-align: right;
+}
+
+#actionBar button {
+	border: 1px solid #ccc;
+	box-sizing: border-box;
+	padding: 8px 16px;
+	font-size: 10px;
+	font-weight: bold;
+	border-radius: 5px;
+	display: inline-block;
 	background: #fff;
-	font: 10px BlinkMacSystemFont
-	box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.75);
-	border: 1px solid rgba(0, 0, 0, 0.25);
-	border-radius: 4px;
-	color: #444;
+	color: #777;
+	margin: 0 2px;
+	height: 32px;
+	cursor: pointer;
 }
 
-#statusBar button:hover {
-	color: #000;
-	border-color: rgba(0, 0, 0, 0.5);
+#actionBar button:focus,
+#actionBar button:hover {
+	color: #1a73e8;
+	background-color: rgba(66, 133, 244, 0.04);
+	border-color: rgb(210, 227, 252);
 }
 
-#statusBar button:focus,
-#statusBar button:active {
-	color: #000;
-	border-color: rgb(77, 144, 254);
-}
-
-#statusBar button:active {
-	background-image: none;
-	background-color: #dedede;
+#actionBar button:active {
+	background-color: rgba(66, 133, 244, 0.2);
 }
 
 #messageLabel {
-	padding: 3px 5px;
-	text-align: center;	
-	font: 10px BlinkMacSystemFont
+	position: absolute;
+	top: 16px;
+	left: 16px;
+	display: block;
+	color: #bbb;
+	font-size: 12px;
 }
