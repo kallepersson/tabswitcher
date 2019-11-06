@@ -2,6 +2,7 @@
 
 	const inputField = document.getElementById("search")
 	const ul = document.getElementById("tabs")
+	let draggedItem = null
 	var modifiers = {ctrl:false, shift:false}
 	var selectedListItemIndex = 0
 	var actionBar = document.getElementById("actionBar")
@@ -142,9 +143,52 @@
 		createTabList(tabController, shouldClearSelection)
 	}
 
-	const createTabList = function(tabController, clearSelection) {
+	const mouseDown = function(evt) {
+		draggedItem = evt.target;
+		draggedItem.classList.add("dragging");
+	}
+
+	const mouseUp = function(evt) {
+		if (!draggedItem || !evt.target || evt.target.tagName != "LI") {
+			return;
+		}
+		let tabId = parseInt(draggedItem.id)
+		let windowId = parseInt(evt.target.dataset.windowId)
+		let index = parseInt(evt.target.dataset.index)
+		if (index < draggedItem.dataset.index) {
+			index += 1;
+		}
+		chrome.tabs.move(tabId, {windowId:windowId, index:index}, function(tab) {
+			chrome.runtime.sendMessage({data:"forceReload"});
+
+			window.setTimeout(function() {
+				reloadTabs(false);
+			}, 100);
+		});
+		draggedItem = null
+		document.querySelectorAll("li.dropTarget").forEach(elm => {
+			elm.classList.remove("dropTarget")
+		});
+		document.querySelectorAll("li.dragging").forEach(elm => {
+			elm.classList.remove("dragging")
+		});
+	}
+
+	const mouseMove = function(evt) {
+		if (!draggedItem || !evt.target || evt.target.tagName != "LI") {
+			return;
+		}
+		document.querySelectorAll("li.dropTarget").forEach(elm => {
+			elm.classList.remove("dropTarget")
+		})
+		evt.target.classList.add("dropTarget")
+	}
+
+	const createTabList = function(tabController, clearSelection, resetScroll) {
 		ul.innerHTML = ""
-		lastWindowId = ""
+		ul.addEventListener("mousemove", mouseMove);
+		var lastWindowId = ""
+		var tabIndex = 0;
 		tabController.filteredTabs.forEach(function(tab, i){
 			var li = document.createElement("li")
 			var img = document.createElement("img")
@@ -165,24 +209,31 @@
 			if (tab.windowId != lastWindowId) {
 				if (i != 0) {
 					li.classList.add("newWindow")
+					tabIndex = 0;
 				}
 				lastWindowId = tab.windowId
 			}
+			li.dataset.index = tabIndex
 			var div = document.createElement("div")
 			li.appendChild(div)
 			div.appendChild(img)
 			div.appendChild(span)
 			div.appendChild(closeButton)
-			span.innerText = tab.title
+			span.innerText = tab.title; 
 			li.addEventListener("click", listItemClicked)
+			li.addEventListener("mousedown", mouseDown);
+			li.addEventListener("mouseup", mouseUp);
 			ul.appendChild(li)
+			tabIndex++;
 		})
 
 		if (clearSelection) {
 			selectedListItemIndex = 0
 		}
 
-		updateSelection(true)
+		if (resetScroll) {
+			updateSelection(true)
+		}
 	}
 
 	const tabIdForIndex = function(index) {
@@ -442,15 +493,24 @@
 		return tabController.filteredTabs.length + " " + (tabController.filteredTabs.length == 1 ? "tab" : "tabs")
 	}
 
-	const setTabs = (tabs) => {
+	const setTabs = (tabs, resetScroll) => {
 		if (!tabs || !tabs.length) {
 			return;
 		}
 
 		tabController.tabs = tabs
 		tabController.filteredTabs = tabs
-		createTabList(tabController, true)
+		createTabList(tabController, true, resetScroll)
 		updateLabels()
+	}
+
+	const reloadTabs = function(callback, resetScroll) {
+		chrome.storage.local.get(["tabs"], function(result) {
+			setTabs(result.tabs, resetScroll);
+			if (callback) {
+				callback()
+			}
+		});	
 	}
 
 	const handleDOMReady = () => {
@@ -471,10 +531,7 @@
 			actionMenu.classList.add("active");
 		})
 
-		chrome.storage.local.get(["tabs"], function(result) {
-			setTabs(result.tabs);
-			window.scrollTo(0, 0)
-		});	
+		reloadTabs(true)
 	}
 
 	window.addEventListener("DOMContentLoaded", handleDOMReady, true)

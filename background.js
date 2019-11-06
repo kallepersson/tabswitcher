@@ -3,6 +3,12 @@
 	var _cacheThrottling = 100;
 	var _showTabsFromAllWindows = true;
 
+	chrome.runtime.onMessage.addListener(function(message, callback) {
+		if (message.data == "forceReload") {
+			updateTabCache();
+		}
+	})
+
 	const updateTabCache = function() {
 		_updateTimeout = null;
 		var tabsCache = [];

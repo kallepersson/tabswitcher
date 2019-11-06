@@ -64,11 +64,38 @@ li {
 	white-space: nowrap;
 	position: relative;
 	font-size: 13px;
+	user-select: all;
 }
 
 li div {
 	overflow: hidden;
 	text-overflow: ellipsis;
+	pointer-events: none;
+}
+
+li.dragging {
+	opacity: 0.5;
+}
+
+li.dropTarget:before {
+	content: "";
+	display: block;
+	width: 100%;
+	position: absolute;
+	width: 110%;
+	background: #a4c8ff;
+	height: 2px;
+	bottom: -2px;
+	left: -10px;
+}
+
+li.selected.dropTarget {
+	background-color: #fff;
+}
+
+li.selected.dropTarget button,
+li.dropTarget:hover button {
+	opacity: 0;
 }
 
 li.newWindow {
