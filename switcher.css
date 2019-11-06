@@ -2,6 +2,7 @@ body {
 	box-sizing: border-box;
 	min-width: 500px;
 	font-family: Roboto, system-ui, sans-serif;
+	background: #fff;
 }
 
 *, * {
@@ -263,4 +264,88 @@ li:hover button {
 }
 #actionMenu button:hover {
 	background-color: #eee;
+}
+
+@media (prefers-color-scheme: dark) {
+	body,
+	#topBar {
+		background: #292A2D;
+	}
+
+	#search {
+		background: #202124;
+		border-color: #636366;
+		color: #fff;
+	}
+
+	li {
+		color: #fff;
+	}
+
+	li.selected.dropTarget {
+		background: transparent;
+	}
+
+
+	li.newWindow {
+		border-top: 24px solid #222;
+	}
+
+	li.newWindow::after {
+		background: linear-gradient(#444, #333);
+		background: #222;
+	}
+
+	li.selected {
+		background-color: #454649;
+	}
+
+	li button {
+		color: #bbb;
+	}
+
+	#actionBar {
+		background-color: transparent;
+		box-shadow: -1px 0 1px rgba(0,0,0,0.7);
+	}
+
+	#actionBar button {
+		border-color: transparent;
+		background: transparent;
+		color: #eee;
+	}
+
+	#actionBar button:focus,
+	#actionBar button:hover {
+		color: #fff;
+		background-color: #333;
+		border-color: transparent;
+	}
+
+	#actionBar #button-menu:hover,
+	#actionBar #button-menu:active {
+		background-color: #333;
+		color: #fff;
+	}
+
+	#actionBar button:active {
+		background-color: #eee;
+	}
+
+	#actionMenu {
+		background: #222;
+		border-color: #000;
+	}
+
+	#actionMenu button {
+		color: #fff;
+	}
+
+	#actionMenu button:hover {
+		background-color: #333;
+	}
+
+	#filterMessage {
+		color: #fff;
+	}
 }
