@@ -65,7 +65,6 @@ li {
 	white-space: nowrap;
 	position: relative;
 	font-size: 13px;
-	user-select: all;
 }
 
 li div {
@@ -146,6 +145,7 @@ li button {
 	width: 48px;
 	text-align: right;
 	background: transparent;
+	pointer-events: all;
 }
 
 li.selected button,
