@@ -3,11 +3,20 @@
 	var _cacheThrottling = 100;
 	var _showTabsFromAllWindows = true;
 
-	chrome.runtime.onMessage.addListener(function(message, callback) {
-		if (message.data == "forceReload") {
-			updateTabCache();
-		}
-	})
+	const updateIcon = function() {
+		var isDarkMode = matchMedia('(prefers-color-scheme: dark)').matches;
+		var iconPathSuffix = isDarkMode ? "-inv" : "";
+		chrome.browserAction.setIcon({
+			path:{
+				"16":"icons/icon-16"+iconPathSuffix+".png",
+				"19":"icons/icon-19"+iconPathSuffix+".png",
+				"38":"icons/icon-38"+iconPathSuffix+".png",
+				"48":"icons/icon-48"+iconPathSuffix+".png",
+				"128":"icons/icon-128"+iconPathSuffix+".png",
+				"256":"icons/icon-256"+iconPathSuffix+".png"
+			}
+		})
+	}
 
 	const updateTabCache = function() {
 		_updateTimeout = null;
@@ -68,5 +77,12 @@
 
 	chrome.storage.onChanged.addListener(onStorageChanged)
 
-	loadConfiguration(updateTabCache);
+	chrome.runtime.onMessage.addListener(function(message, callback) {
+		if (message.data == "forceReload") {
+			updateTabCache()
+		}
+	})
+
+	loadConfiguration(updateTabCache)
+	updateIcon()
 })()
