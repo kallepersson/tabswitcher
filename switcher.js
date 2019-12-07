@@ -20,7 +20,7 @@
 			includeScore: false,
 			shouldSort: true,
 			tokenize: false,
-			threshold: 0.1,
+			threshold: 0.2,
 			location: 0,
 			distance: 100,
 			maxPatternLength: 32,
