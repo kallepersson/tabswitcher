@@ -22,7 +22,7 @@
 			tokenize: false,
 			threshold: 0.2,
 			location: 0,
-			distance: 100,
+			distance: 1000,
 			maxPatternLength: 32,
 			keys: ["title", "url"]
 		}),
